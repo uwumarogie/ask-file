@@ -16,19 +16,26 @@ function removeExtension(fileName: string) {
 }
 
 export function SideBar() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(true);
   const { user } = useUser();
 
   const { files, isLoading, hasError } = useUserFile(user?.id);
-
+  console.log(isOpen);
   return (
     <aside
       className={clsx(
-        "fixed top-0 left-0 z-40 w-72 h-screen bg-black text-white transition-transform -translate-x-full sm:translate-x-0",
+        "fixed top-0 left-0 z-40 w-72 h-screen bg-black text-white transition-all translate-x-full",
+        "sm:translate-x-0",
+        isOpen ? "w-5/6 sm:w-64" : "w-0 sm:w-20",
       )}
       aria-label="Sidebar"
     >
-      <div className="flex flex-row justify-between">
+      <div
+        className={clsx(
+          "flex justify-between",
+          isOpen ? "flex-row" : "flex-col",
+        )}
+      >
         <button onClick={() => setIsOpen((prev) => !prev)} className="p-5">
           <Image
             className="dark:invert"
@@ -49,24 +56,25 @@ export function SideBar() {
           />
         </button>
       </div>
-
-      <div className="h-full px-2 py-5 overflow-y-auto">
-        <ul className="space-y-6 font-medium flex flex-col">
-          <div className="flex flex-row justify-between items-center p-2 h-10 group">
-            <span className="text-sm font-bold">Projects</span>
-            <button onClick={() => redirect("/")} className="p-5">
-              <Image
-                className="dark:invert  hidden group-hover:block"
-                src="/icons/add-icon.svg"
-                alt="Move sidebar icon"
-                width={24}
-                height={24}
-              />
-            </button>
-          </div>
-          <Files files={files} isLoading={isLoading} hasError={hasError} />
-        </ul>
-      </div>
+      {isOpen && (
+        <div className="h-full px-2 py-5 overflow-y-auto">
+          <ul className="space-y-6 font-medium flex flex-col">
+            <div className="flex flex-row justify-between items-center p-2 h-10 group">
+              <span className="text-sm font-bold">Projects</span>
+              <button onClick={() => redirect("/")} className="p-5">
+                <Image
+                  className="dark:invert  hidden group-hover:block"
+                  src="/icons/add-icon.svg"
+                  alt="Move sidebar icon"
+                  width={24}
+                  height={24}
+                />
+              </button>
+            </div>
+            <Files files={files} isLoading={isLoading} hasError={hasError} />
+          </ul>
+        </div>
+      )}
     </aside>
   );
 }

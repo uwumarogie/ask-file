@@ -15,7 +15,7 @@ function removeExtension(fileName: string) {
   return fileName.split(".")[0];
 }
 
-export function SideNavbar() {
+export function SideBar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const { user } = useUser();
 
@@ -25,10 +25,16 @@ export function SideNavbar() {
     <aside
       className={clsx(
         "fixed top-0 left-0 z-40 w-72 h-screen bg-black text-white transition-transform -translate-x-full sm:translate-x-0",
+        isOpen ? "w-5/6 sm:w-64" : "w-0 sm:w-20",
       )}
       aria-label="Sidebar"
     >
-      <div className="flex flex-row justify-between">
+      <div
+        className={clsx(
+          "flex justify-between",
+          isOpen ? "flex-row" : "flex-col",
+        )}
+      >
         <button onClick={() => setIsOpen((prev) => !prev)} className="p-5">
           <Image
             className="dark:invert"

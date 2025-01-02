@@ -51,10 +51,10 @@ export async function insertUserAndFileData(file: File) {
       sanitizedFileName,
     );
 
-    return NextResponse.json({ success: true, response: sanitizedFileName });
+    return { success: true, response: sanitizedFileName };
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ success: false, response: error });
+    return { success: false, response: error };
   }
 }
 
