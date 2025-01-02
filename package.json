@@ -3,25 +3,42 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.717.0",
+    "@clerk/nextjs": "^6.9.6",
+    "@pinecone-database/pinecone": "^4.0.0",
+    "clsx": "^2.1.1",
+    "dotenv-cli": "^8.0.0",
+    "drizzle-orm": "^0.38.2",
+    "next": "15.1.0",
+    "openai": "^4.77.0",
+    "pdf-parse2": "^1.0.4",
+    "pg": "^8.13.1",
+    "postgres": "^3.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.1.0"
+    "react-dropzone": "^14.3.5",
+    "uuid": "^11.0.3",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "eslint": "^9",
+    "@eslint/eslintrc": "^3.2.0",
+    "@types/node": "^20.17.10",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@types/textract": "^2.4.5",
+    "drizzle-kit": "^0.30.1",
+    "eslint": "^9.17.0",
     "eslint-config-next": "15.1.0",
-    "@eslint/eslintrc": "^3"
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }

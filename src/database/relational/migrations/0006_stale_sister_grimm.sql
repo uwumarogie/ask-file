@@ -1,0 +1,1 @@
+ALTER TABLE "files" ALTER COLUMN "file_id" SET DATA TYPE varchar;
