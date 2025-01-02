@@ -16,11 +16,19 @@ function removeExtension(fileName: string) {
 }
 
 export function SideBar() {
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(() => {
+    if (typeof window !== "undefined") {
+      const savedState = localStorage.getItem("sideNavbarIsOpen");
+      return savedState === "true" ? true : false;
+    }
+    return false;
+  });
   const { user } = useUser();
-
   const { files, isLoading, hasError } = useUserFile(user?.id);
-  console.log(isOpen);
+  React.useEffect(() => {
+    localStorage.setItem("sideNavbarIsOpen", isOpen.toString());
+  }, [isOpen]);
+
   return (
     <aside
       className={clsx(
