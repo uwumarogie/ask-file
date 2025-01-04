@@ -15,6 +15,7 @@ export function Dashboard() {
       syncUser(userId, username, email).then(console.log).catch(console.error);
     }
   }, []);
+
   return (
     <div className="flex flex-col items-center justify-center">
       <Uploader />
