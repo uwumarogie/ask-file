@@ -15,6 +15,7 @@ const responseSchema = z.object({
 export function Uploader() {
   const [file, setFile] = React.useState<File | null>(null);
   const [isDragActive, setIsDragActive] = React.useState(false);
+  const router = useRouter();
   const { getRootProps, getInputProps, isDragReject } = useDropzone({
     onDrop,
     accept: { "application/pdf": [".pdf"] },
@@ -23,7 +24,6 @@ export function Uploader() {
     onDragEnter: () => setIsDragActive(true),
     onDragLeave: () => setIsDragActive(false),
   });
-  const router = useRouter();
 
   React.useEffect(() => {
     (async () => {

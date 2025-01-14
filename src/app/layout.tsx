@@ -32,13 +32,13 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} bg-neutral-700 antialiased`}
         >
           <SideBar />
           <SignedOut>
             <SignInButton />
           </SignedOut>
-          <div className="flex p-8 justify-end">
+          <div className="flex p-4 justify-end">
             <UserButton
               appearance={{
                 elements: {

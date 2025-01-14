@@ -23,8 +23,8 @@ export function SideBar() {
   return (
     <aside
       className={clsx(
-        "fixed top-0 left-0 z-40 w-72 h-screen bg-black text-white transition-all sm:translate-x-0",
-        isOpen ? "w-5/6 sm:w-64" : "sm:w-20 w-0",
+        "fixed top-0 left-0 z-40 h-screen bg-black text-white transition-all sm:translate-x-0",
+        isOpen ? "lg:w-64 md:w-64 w-full bg-black" : "w-15 lg:w-20 bg-neutral-700 lg:bg-black",
       )}
       aria-label="Sidebar"
     >

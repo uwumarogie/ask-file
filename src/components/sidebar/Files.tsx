@@ -3,6 +3,8 @@ import React from "react";
 import Link from "next/link";
 import { File } from "@/util/hooks/use-user-files";
 import Image from "next/image";
+import { useSideBarStore } from "@/util/hooks/use-sidebar-store";
+
 type FileProps = {
   files: File[];
   isLoading: boolean;
@@ -11,6 +13,8 @@ type FileProps = {
 
 //NOTE: On double click, let the user change the file name
 export default function Files({ files, isLoading, hasError }: FileProps) {
+  const { toggle } = useSideBarStore((state) => state);
+
   return (
     <React.Fragment>
       {isLoading && <li>Loading files...</li>}
@@ -27,6 +31,7 @@ export default function Files({ files, isLoading, hasError }: FileProps) {
           <Link
             key={file.file_id}
             href={`/c/${file.file_id}`}
+            onClick={toggle}
             className="flex p-1 hover:bg-gray-800 hover:rounded-xl cursor-pointer justify-between"
           >
             <span>{file.file_name}</span>
