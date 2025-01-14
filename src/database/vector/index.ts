@@ -4,20 +4,16 @@ import { UpsertRequest } from "@pinecone-database/pinecone/dist/pinecone-generat
 import {
   computeDistanceHaversine,
   serverLocations,
-} from "../../util/vector/compute-distance-haversine";
+} from "@/util/vector/compute-distance-haversine";
 
 export async function initializePinecone() {
   const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-
   if (!PINECONE_API_KEY) {
     throw new Error("PINECONE_API_KEY is not set");
   }
-
-  const pinecone = new Pinecone({
+  return new Pinecone({
     apiKey: PINECONE_API_KEY,
   });
-
-  return pinecone;
 }
 
 async function getDeviceLocationInformation() {
@@ -83,7 +79,6 @@ export async function getIndex(pinecone: Pinecone, indexName: string) {
 
   let status = await pinecone.describeIndex(indexName);
   while (!status.status.ready) {
-    console.log("Waiting for index to be ready...");
     await new Promise((resolve) => setTimeout(resolve, 1000));
     status = await pinecone.describeIndex(indexName);
   }
@@ -91,7 +86,7 @@ export async function getIndex(pinecone: Pinecone, indexName: string) {
   return pinecone.Index(indexName);
 }
 
-// TODO: namespace very important to differentiate between different files
+// NOTE: namespace very important to differentiate between different files
 export async function upsertEmbedding(
   index: any,
   chunks: string[],

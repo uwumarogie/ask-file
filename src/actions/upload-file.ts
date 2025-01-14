@@ -14,12 +14,10 @@ import {
 import { generateEmbedding } from "@/database/vector/util/generate-embedding";
 import { currentUser } from "@clerk/nextjs/server";
 import { sanitizeFileName } from "@/util/file-modification/util";
-import { NextResponse } from "next/server";
-
+import { v4 as uuidv4 } from "uuid";
 const pinecone = await initializePinecone();
 
-//NOTE: this function name is too long CHANGE THIS
-export async function insertUserAndFileData(file: File) {
+export async function insertFileData(file: File) {
   try {
     const user = await currentUser();
 
@@ -38,20 +36,15 @@ export async function insertUserAndFileData(file: File) {
     const fileKey = await new AWSUploader(user.id).uploadFile(file);
 
     const sanitizedFileName = sanitizeFileName(file.name);
+    const fileId = uuidv4();
     await db.insert(files).values({
-      file_id: `${user.id}, ${sanitizedFileName}`,
+      file_id: fileId,
       user_id: user.id,
       file_name: sanitizedFileName,
       file_path: fileKey,
     });
-
-    const response = await uploadFileEmbeddingToPinecone(
-      file,
-      user.id,
-      sanitizedFileName,
-    );
-
-    return { success: true, response: sanitizedFileName };
+    // await uploadFileEmbeddingToPinecone(file, user.id, sanitizedFileName);
+    return { success: true, response: fileId };
   } catch (error) {
     console.error(error);
     return { success: false, response: error };
@@ -82,6 +75,5 @@ async function getChunkedTextFromFile(file: File | null) {
   const PDFParser = new PDFParse();
   const data = await PDFParser.loadPDF(buffer);
   const text = data?.text;
-  console.log("PDF data:", data?.text);
   return chunkText(text);
 }

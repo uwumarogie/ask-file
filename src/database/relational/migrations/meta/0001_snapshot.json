@@ -53,12 +53,8 @@
           "name": "files_user_id_user_user_id_fk",
           "tableFrom": "files",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["user_id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -119,23 +115,17 @@
         "user_username_unique": {
           "name": "user_username_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         },
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "user_password_hash_unique": {
           "name": "user_password_hash_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "password_hash"
-          ]
+          "columns": ["password_hash"]
         }
       },
       "policies": {},
