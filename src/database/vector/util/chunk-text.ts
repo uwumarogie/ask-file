@@ -5,6 +5,7 @@
  * */
 
 export function chunkText(
+  context: string,
   text: string | undefined,
   chunkSize: number = 1000,
   overlap: number = 100,

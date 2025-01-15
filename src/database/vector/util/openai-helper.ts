@@ -49,3 +49,40 @@ export async function generateEmbedding(
 
   return embeddings;
 }
+
+function buildPrompt(text: string) {
+  return `I will provide you with a text consisting of approximately 3 pages from a PDF document.
+	  Your task is to classify the text into one of the following categories:
+	  1. Technical Document: Content related to computer science, engineering, or mathematics.
+	  2. News Article: Journalistic content typically covering current events.
+	  3. Educational Material: Content resembling university slides or lecture notes.
+	  Input Text: ${text}
+          Please identify the category that best fits the provided text.`;
+}
+
+export async function getCategorieContext(
+  text: string | undefined,
+): Promise<{ success: boolean; responseText: string | null }> {
+  try {
+    if (!text) {
+      throw new Error("The pdf is most likely empty.");
+    }
+
+    const input = buildPrompt(text);
+    const response = await openai.chat.completions.create({
+      model: "chatgpt-4o-latest",
+      messages: [
+        {
+          role: "user",
+          content: input,
+        },
+      ],
+      temperature: 1.0,
+    });
+
+    return { success: true, responseText: response.choices[0].message.content };
+  } catch (error) {
+    console.error(error);
+    return { success: false, responseText: "Something went wrong" };
+  }
+}
