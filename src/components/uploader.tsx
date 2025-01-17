@@ -29,6 +29,7 @@ export function Uploader() {
     (async () => {
       if (file) {
         const _context = await insertFileData(file);
+        console.log(_context);
         const data = responseSchema.parse(_context);
         router.push(`/c/${data.response}`);
       }

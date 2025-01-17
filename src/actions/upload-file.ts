@@ -18,6 +18,22 @@ import { currentUser } from "@clerk/nextjs/server";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { v4 as uuidv4 } from "uuid";
 import { chunkText } from "@/database/vector/util/chunk-text";
+
+type Category =
+  | "Technical Document"
+  | "News Article"
+  | "Educational Material"
+  | "General"
+  | "Error";
+
+const Categories = {
+  Technical: "Technical Document",
+  News: "News Article",
+  Educational: "Educational Material",
+  General: "General",
+  Error: "Error",
+} as const;
+
 const pinecone = await initializePinecone();
 
 export async function insertFileData(file: File) {
@@ -46,8 +62,7 @@ export async function insertFileData(file: File) {
       file_name: sanitizedFileName,
       file_path: fileKey,
     });
-    getChunkedTextFromFile(file);
-    // await uploadFileEmbeddingToPinecone(file, user.id, sanitizedFileName);
+    await uploadFileEmbeddingToPinecone(file, sanitizedFileName);
     return { success: true, response: fileId };
   } catch (error) {
     console.error(error);
@@ -57,12 +72,14 @@ export async function insertFileData(file: File) {
 
 async function uploadFileEmbeddingToPinecone(
   file: File | null,
-  userId: string,
   fileName: string,
 ) {
   try {
     const chunks = await getChunkedTextFromFile(file);
-    const index = await getIndex(pinecone, userId);
+    console.debug("HELOWiröbewrbwörbweiewb");
+    console.log("fileName", fileName);
+    const index = await getIndex(pinecone, fileName);
+    console.debug(index);
     const embeddings = await generateEmbedding(chunks);
     const response = await upsertEmbedding(index, chunks, embeddings, fileName);
     return response;
@@ -72,51 +89,46 @@ async function uploadFileEmbeddingToPinecone(
   }
 }
 
-function buildPrompt(text: string) {
-  return `I will provide you with a text consisting of approximately 3 pages from a PDF document.
-	  Your task is to classify the text into one of the following categories:
-	  1. Technical Document: Content related to computer science, engineering, or mathematics.
-	  2. News Article: Journalistic content typically covering current events.
-	  3. Educational Material: Content resembling university slides or lecture notes.
-	  Input Text: ${text}
-          Please identify the category that best fits the provided text.`;
-}
-
 function getCategory(response: {
   success: boolean;
   responseText: string | null;
-}) {
+}): Category {
   if (!response.success || response.responseText === null) {
-    return "Error";
+    return Categories.Error;
   }
+  const { responseText } = response;
 
-  if (response.responseText.includes("Technical Document")) {
-    return "Technical Document";
-  } else if (response.responseText.includes("News Article")) {
-    return "News Article";
-  } else if (response.responseText.includes("Educational Material")) {
-    return "Educational Material";
-  } else {
-    return "General";
+  if (responseText.includes(Categories.Technical)) {
+    return Categories.Technical;
   }
+  if (responseText.includes(Categories.News)) {
+    return Categories.News;
+  }
+  if (responseText.includes(Categories.Educational)) {
+    return Categories.Educational;
+  }
+  return Categories.General;
 }
 
-/*
- * TODO: Change the method of retrieving the text from the category for better accuracy
- * maybe use for technical documents, the api called mathpix
- *  this is a bad  function refactor it and use smaller functions
- */
-
-async function getChunkedTextFromFile(file: File | null) {
+async function initialText(file: File | null) {
   if (!file) {
     throw new Error("No file selected");
   }
   const buffer = await file.arrayBuffer();
   const PDFParser = new PDFParse();
   const data = await PDFParser.loadPDF(buffer);
-  const contextText = data?.text.slice(0, 1100);
-  const response = await getCategorieContext(contextText);
-  const category = getCategory(response);
-  const text = data?.text;
-  return chunkText(category, text);
+  if (!data?.text) {
+    throw new Error("No text in the pdf");
+  }
+  return data.text;
+}
+
+async function getChunkedTextFromFile(file: File | null) {
+  const contextText = await initialText(file);
+  const textCategory = await getCategorieContext(contextText.slice(0, 1100));
+  const category = getCategory(textCategory);
+  /* TODO: After getting the category, we need to get the best form for the text LATEX, text for the image without giving it to openai. */
+  const rawText = contextText;
+  const chunkedText = await chunkText(category, rawText);
+  return chunkedText;
 }

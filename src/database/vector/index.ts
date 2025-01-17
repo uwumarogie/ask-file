@@ -9,7 +9,7 @@ import {
 export async function initializePinecone() {
   const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
   if (!PINECONE_API_KEY) {
-    throw new Error("PINECONE_API_KEY is not set");
+    throw new Error("PINECONE_API_KEY is undefined!");
   }
   return new Pinecone({
     apiKey: PINECONE_API_KEY,
@@ -64,8 +64,12 @@ export async function getIndex(pinecone: Pinecone, indexName: string) {
   }
 
   const { region, cloud } = await getRegion();
+  console.log("region", region);
+  console.log("cloud", cloud);
   const dimension = 1536;
 
+  console.log("name", indexName);
+  console.log("lubweröouwberöweröwir hello test");
   await pinecone.createIndex({
     name: indexName,
     dimension: dimension,
