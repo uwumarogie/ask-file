@@ -114,12 +114,14 @@ async function initialText(file: File | null) {
   return data.text;
 }
 
+/*
+ * NOTE: After getting the category, we need to get the best form for the text LATEX, text for the image without giving it to openai.
+ * */
 async function getChunkedTextFromFile(file: File | null) {
   const contextText = await initialText(file);
   const textCategory = await getCategorieContext(contextText.slice(0, 1100));
   const category = getCategory(textCategory);
-  /* TODO: After getting the category, we need to get the best form for the text LATEX, text for the image without giving it to openai. */
   const rawText = contextText;
-  const chunkedText = await chunkText(category, rawText);
-  return chunkedText;
+  const chunks = await chunkText(category, rawText);
+  return chunks;
 }
