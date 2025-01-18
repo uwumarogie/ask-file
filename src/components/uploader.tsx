@@ -1,20 +1,21 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { insertUserAndFileData } from "@/actions/upload-file";
+import { insertFileData } from "@/actions/upload-file";
 import { useDropzone } from "react-dropzone";
 import clsx from "clsx";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import * as z from "zod";
 
 const responseSchema = z.object({
   success: z.boolean(),
-  response: z.string(),
+  response: z.string().uuid(),
 });
 
 export function Uploader() {
   const [file, setFile] = React.useState<File | null>(null);
   const [isDragActive, setIsDragActive] = React.useState(false);
+  const router = useRouter();
   const { getRootProps, getInputProps, isDragReject } = useDropzone({
     onDrop,
     accept: { "application/pdf": [".pdf"] },
@@ -24,17 +25,19 @@ export function Uploader() {
     onDragLeave: () => setIsDragActive(false),
   });
 
+  React.useEffect(() => {
+    (async () => {
+      if (file) {
+        const _context = await insertFileData(file);
+        const data = responseSchema.parse(_context);
+        router.push(`/c/${data.response}`);
+      }
+    })();
+  }, [file]);
+
   function onDrop(acceptedFiles: File[]) {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
-    }
-  }
-
-  async function handleSubmit() {
-    if (file) {
-      const _context = await insertUserAndFileData(file);
-      const data = responseSchema.parse(_context);
-      redirect(`/${data.response}`);
     }
   }
 
@@ -43,7 +46,8 @@ export function Uploader() {
       <form
         {...getRootProps()}
         className={clsx(
-          "flex flex-col items-center justify-center border-4 border-dashed p-32 lg:p-40 cursor-pointer rounded-2xl transition-colors duration-200",
+          "flex flex-col items-center justify-center border-4 border-dashed p-32 lg:p-40" +
+            "cursor-pointer rounded-2xl transition-colors duration-200",
           isDragActive
             ? "border-green-400"
             : isDragReject
@@ -95,68 +99,6 @@ export function Uploader() {
           <span>Max file size: 25MB</span>
         </div>
       )}
-      {file && <DisplayFile file={file} />}
-      {file && (
-        <button
-          className="p-4 rounded-2xl border-4 border-gray-800 hover:bg-gray-400 text-black text-xl font-bold hover:border-0"
-          onClick={handleSubmit}
-        >
-          Upload File
-        </button>
-      )}
     </div>
-  );
-}
-
-function extractFileType(fileType: string) {
-  if (fileType.length === 0) {
-    return "unknown";
-  }
-  if (fileType.includes("pdf")) {
-    return "pdf";
-  }
-}
-
-function deleteFile(fileName: string) {
-  console.log(fileName);
-}
-export function DisplayFile({ file }: { file: File }) {
-  const fileType = extractFileType(file.type);
-  return (
-    <div className="flex flex-col space-y-5 border-4 border-dashed border-black rounded-2xl text-black p-4">
-      <div className="flex flex-row relative">
-        <div className="flex flex-row space-x-3 iitems-center">
-          <FileImage fileType={fileType} />
-          <div className="flex flex-col space-y-5">
-            <p className="font-semibold text-lg">{file.name}</p>
-            <p className="text-gray-800">
-              {Math.round(file.size / 1_000_000)} MB
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={() => deleteFile(file.name)}
-          className="top-6 absolute right-0 bottom-96"
-        >
-          <Image
-            src="/icons/delete-file-icon.svg"
-            alt="Trash icon"
-            width={24}
-            height={24}
-          />
-        </button>
-      </div>
-      <progress value={0.5} className="flex rounded-xl" />
-    </div>
-  );
-}
-function FileImage({ fileType }: { fileType?: string }) {
-  return (
-    <Image
-      src={`/icons/files/${fileType}-file-icon.jpg`}
-      alt="Upload file icon"
-      width={100}
-      height={100}
-    />
   );
 }

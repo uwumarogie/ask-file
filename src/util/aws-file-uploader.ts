@@ -42,7 +42,8 @@ export class AWSUploader {
   async uploadMany(files: File[]) {
     try {
       const paths = await Promise.all(
-        files.map(async (file) => this.uploadFile(file),)  );
+        files.map(async (file) => this.uploadFile(file)),
+      );
 
       return paths.map((path) => {
         path;

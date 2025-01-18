@@ -2,7 +2,7 @@
 import { db } from "@/database/relational/connection";
 import { eq } from "drizzle-orm";
 import { files } from "@/database/relational/schema";
-import { type File } from "@/util/use-user-files";
+import { type File } from "@/util/hooks/use-user-files";
 
 type Response = {
   files: Array<File>;
@@ -17,7 +17,6 @@ export async function getFilesFromUser(userId: string): Promise<Response> {
       })
       .from(files)
       .where(eq(files.user_id, userId));
-    console.debug(userFiles);
     const isError = userFiles.length === 0;
 
     return {

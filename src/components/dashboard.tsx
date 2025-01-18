@@ -6,18 +6,21 @@ import React from "react";
 import { syncUser } from "@/actions/sync-user";
 
 export function Dashboard() {
-    const { user } = useUser();
-    const userId = user?.id;
-    const username = user?.username;
-    const email = user?.emailAddresses[0].emailAddress;
-    React.useEffect(() => {
-        if (userId) {
-            syncUser(userId, username, email).then(console.log).catch(console.error);
-        }
-    }, []);
-    return (
-        <div className="flex flex-col items-center justify-center">
-            <Uploader />
-        </div>
-    );
+  const { user } = useUser();
+  const userId = user?.id;
+  const username = user?.username;
+  const email = user?.emailAddresses[0].emailAddress;
+  React.useEffect(() => {
+    async function checkUser() {
+      if (userId) {
+        await syncUser(userId, username, email);
+      }
+    }
+    checkUser();
+  }, []);
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <Uploader />
+    </div>
+  );
 }

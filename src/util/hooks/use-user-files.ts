@@ -9,7 +9,7 @@ export function useUserFile(userId?: string) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
 
-  React.useEffect(() => {
+  const fetchFiles = React.useCallback(async () => {
     if (!userId) {
       setFiles([]);
       setHasError(false);
@@ -34,7 +34,9 @@ export function useUserFile(userId?: string) {
       });
   }, [userId]);
 
-  console.log(files);
+  React.useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
 
-  return { files, isLoading, hasError };
+  return { files, isLoading, hasError, refetch: fetchFiles };
 }

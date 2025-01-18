@@ -85,6 +85,13 @@
       "when": 1734819380099,
       "tag": "0011_quick_oracle",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1736694500420,
+      "tag": "0012_omniscient_betty_ross",
+      "breakpoints": true
     }
   ]
 }
