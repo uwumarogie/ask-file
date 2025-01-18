@@ -9,11 +9,7 @@ import {
   generateEmbedding,
   getCategorieContext,
 } from "@/database/vector/util/openai-helper";
-import {
-  initializePinecone,
-  getIndex,
-  upsertEmbedding,
-} from "@/database/vector/index";
+import { upsertEmbedding } from "@/database/vector/index";
 import { currentUser } from "@clerk/nextjs/server";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { v4 as uuidv4 } from "uuid";
@@ -33,8 +29,6 @@ const Categories = {
   General: "General",
   Error: "Error",
 } as const;
-
-const pinecone = await initializePinecone();
 
 export async function insertFileData(file: File) {
   try {
@@ -62,7 +56,7 @@ export async function insertFileData(file: File) {
       file_name: sanitizedFileName,
       file_path: fileKey,
     });
-    await uploadFileEmbeddingToPinecone(file, sanitizedFileName);
+    await uploadFileEmbeddingToPinecone(file, user.id, fileId);
     return { success: true, response: fileId };
   } catch (error) {
     console.error(error);
@@ -72,16 +66,13 @@ export async function insertFileData(file: File) {
 
 async function uploadFileEmbeddingToPinecone(
   file: File | null,
-  fileName: string,
+  userId: string,
+  fileId: string,
 ) {
   try {
     const chunks = await getChunkedTextFromFile(file);
-    console.debug("HELOWiröbewrbwörbweiewb");
-    console.log("fileName", fileName);
-    const index = await getIndex(pinecone, fileName);
-    console.debug(index);
     const embeddings = await generateEmbedding(chunks);
-    const response = await upsertEmbedding(index, chunks, embeddings, fileName);
+    const response = await upsertEmbedding(chunks, embeddings, fileId, userId);
     return response;
   } catch (error) {
     console.error(error);

@@ -11,9 +11,12 @@ export function Dashboard() {
   const username = user?.username;
   const email = user?.emailAddresses[0].emailAddress;
   React.useEffect(() => {
-    if (userId) {
-      syncUser(userId, username, email).then(console.log).catch(console.error);
+    async function checkUser() {
+      if (userId) {
+        await syncUser(userId, username, email);
+      }
     }
+    checkUser();
   }, []);
   return (
     <div className="flex flex-col items-center justify-center">

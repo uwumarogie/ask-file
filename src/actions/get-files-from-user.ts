@@ -17,7 +17,6 @@ export async function getFilesFromUser(userId: string): Promise<Response> {
       })
       .from(files)
       .where(eq(files.user_id, userId));
-    console.debug(userFiles);
     const isError = userFiles.length === 0;
 
     return {

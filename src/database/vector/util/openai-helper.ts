@@ -12,11 +12,13 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 const openAIEmbeddingSchema = z.object({
   object: z.string(),
-  data: z.object({
-    object: z.string(),
-    index: z.number(),
-    embedding: z.array(z.number()),
-  }),
+  data: z.array(
+    z.object({
+      object: z.string(),
+      index: z.number(),
+      embedding: z.array(z.number()),
+    }),
+  ),
   model: z.string(),
   usage: z.object({
     prompt_tokens: z.number(),
@@ -31,7 +33,6 @@ export async function generateEmbedding(
   const embeddings = [];
   for (let i = 0; i < chunkedText.length; i += batchSize) {
     const batch = chunkedText.slice(i, i + batchSize);
-
     try {
       const embedding = await openai.embeddings.create({
         model: "text-embedding-3-large",
@@ -39,7 +40,9 @@ export async function generateEmbedding(
         encoding_format: "float",
       });
       const validateResponse = openAIEmbeddingSchema.parse(embedding);
-      const batchEmbeddings = validateResponse.data.embedding;
+      const batchEmbeddings = validateResponse.data.map(
+        (item) => item.embedding,
+      );
       embeddings.push(batchEmbeddings);
       console.debug("Batch embeddings:", batchEmbeddings);
     } catch (error) {
@@ -47,17 +50,7 @@ export async function generateEmbedding(
     }
   }
 
-  return embeddings;
-}
-
-function buildPrompt(text: string) {
-  return `I will provide you with a text consisting of approximately 3 pages from a PDF document.
-	  Your task is to classify the text into one of the following categories:
-	  1. Technical Document: Content related to computer science, engineering, or mathematics.
-	  2. News Article: Journalistic content typically covering current events.
-	  3. Educational Material: Content resembling university slides or lecture notes.
-	  Input Text: ${text}
-          Please identify the category that best fits the provided text.`;
+  return embeddings.flat();
 }
 
 export async function getCategorieContext(
@@ -68,7 +61,14 @@ export async function getCategorieContext(
       throw new Error("The pdf is most likely empty.");
     }
 
-    const input = buildPrompt(text);
+    const input = `I will provide you with a text consisting of approximately 3 pages from a PDF document.
+	  Your task is to classify the text into one of the following categories:
+	  1. Technical Document: Content related to computer science, engineering, or mathematics.
+	  2. News Article: Journalistic content typically covering current events.
+	  3. Educational Material: Content resembling university slides or lecture notes.
+	  Input Text: ${text}
+          Please identify the category that best fits the provided text.`;
+
     const response = await openai.chat.completions.create({
       model: "chatgpt-4o-latest",
       messages: [

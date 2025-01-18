@@ -8,6 +8,7 @@ import Files from "./files";
 import SidebarButton from "./sidebar-button";
 import { useSideBarStore } from "@/util/hooks/use-sidebar-store";
 import { usePathname } from "next/navigation";
+
 export function SideBar() {
   const { isOpen, toggle } = useSideBarStore((state) => state);
   const { user } = useUser();
