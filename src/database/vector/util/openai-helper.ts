@@ -26,6 +26,15 @@ const openAIEmbeddingSchema = z.object({
   }),
 });
 
+export async function generateInputEmbedding(input: string | string[]) {
+  const embedding = await openai.embeddings.create({
+    model: "text-embedding-3-large",
+    input: input,
+    encoding_format: "float",
+  });
+  return embedding;
+}
+
 export async function generateEmbedding(
   chunkedText: string[],
 ): Promise<number[][]> {
@@ -34,11 +43,7 @@ export async function generateEmbedding(
   for (let i = 0; i < chunkedText.length; i += batchSize) {
     const batch = chunkedText.slice(i, i + batchSize);
     try {
-      const embedding = await openai.embeddings.create({
-        model: "text-embedding-3-large",
-        input: batch,
-        encoding_format: "float",
-      });
+      const embedding = await generateInputEmbedding(batch);
       const validateResponse = openAIEmbeddingSchema.parse(embedding);
       const batchEmbeddings = validateResponse.data.map(
         (item) => item.embedding,
