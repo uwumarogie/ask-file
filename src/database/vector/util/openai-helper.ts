@@ -1,6 +1,6 @@
-// TODO: Remove the logging before pushing to production
 import * as z from "zod";
 import OpenAI from "openai";
+import { getCategoryPrompt } from "@/util/prompts/categoryPrompt";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -65,15 +65,7 @@ export async function getCategorieContext(
     if (!text) {
       throw new Error("The pdf is most likely empty.");
     }
-
-    const input = `I will provide you with a text consisting of approximately 3 pages from a PDF document.
-	  Your task is to classify the text into one of the following categories:
-	  1. Technical Document: Content related to computer science, engineering, or mathematics.
-	  2. News Article: Journalistic content typically covering current events.
-	  3. Educational Material: Content resembling university slides or lecture notes.
-	  Input Text: ${text}
-          Please identify the category that best fits the provided text.`;
-
+    const input = getCategoryPrompt(text);
     const response = await openai.chat.completions.create({
       model: "chatgpt-4o-latest",
       messages: [
@@ -84,10 +76,14 @@ export async function getCategorieContext(
       ],
       temperature: 1.0,
     });
-
+    console.log(response.choices[0].message.content);
     return { success: true, responseText: response.choices[0].message.content };
   } catch (error) {
     console.error(error);
     return { success: false, responseText: "Something went wrong" };
   }
+}
+
+export async function respondToUserQuestion() {
+  return { success: true };
 }

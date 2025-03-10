@@ -33,7 +33,7 @@ export function Uploader() {
         router.push(`/c/${data.response}`);
       }
     })();
-  }, [file]);
+  }, [file, router]);
 
   function onDrop(acceptedFiles: File[]) {
     if (acceptedFiles.length > 0) {

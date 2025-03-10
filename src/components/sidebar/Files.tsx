@@ -19,9 +19,8 @@ export default function Files({ files, isLoading, hasError }: FileProps) {
     <React.Fragment>
       {isLoading && <li>Loading files...</li>}
       {hasError && files.length === 0 && (
-        <li>Click on the pen to upload a file</li>
+        <li>Upload a file after clicking on the pen</li>
       )}
-      {hasError && <li>Error loading files</li>}
       {!isLoading && !hasError && files.length === 0 && (
         <li>No files found.</li>
       )}

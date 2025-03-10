@@ -45,9 +45,7 @@ export class AWSUploader {
         files.map(async (file) => this.uploadFile(file)),
       );
 
-      return paths.map((path) => {
-        path;
-      });
+      return paths;
     } catch (error) {
       console.error(error);
       throw error;

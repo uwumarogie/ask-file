@@ -2,14 +2,16 @@
 import React from "react";
 import { queryPinecone } from "@/database/vector";
 import { useUser } from "@clerk/nextjs";
+import {useParams} from "next/navigation";
 
 export default function ChatInput() {
   const [input, setInput] = React.useState("");
+  const params = useParams<{slug: string}>();
   const { user } = useUser();
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (user) {
-      await queryPinecone(input, user.id);
+      await queryPinecone(input, user.id, params.slug);
     }
   }
   return (

@@ -44,30 +44,36 @@ export async function upsertEmbedding(
 
   try {
     await index.namespace(namespace).upsert(vectors);
-    console.log("Upserted vectors to Pinecone");
   } catch (error) {
     console.error(`Error upserting vectors to Pinecone ${error}`);
     throw error;
   }
 }
 
-export async function searchPinecone(query: number[], namespace: string) {
+export async function searchPinecone(
+  query: number[],
+  namespace: string,
+  file_id: string,
+) {
   const pinecone = await initializePinecone();
   const index = pinecone.index("ask-file", PINECONE_HOST);
 
-  //FIX:;find a way to filter it better
-  // smaller chunking size or filter from the id using the file_id
-
-  const matches = await index.namespace(namespace).query({
+  const roughResults = await index.namespace(namespace).query({
     vector: query,
     topK: 10,
     includeMetadata: true,
   });
-
-  console.debug(matches.matches);
+  const result = roughResults.matches.filter(
+    (result) => result?.metadata?.file_id === file_id,
+  );
+  return result;
 }
 
-export async function queryPinecone(input: string, namespace: string) {
+export async function queryPinecone(
+  input: string,
+  namespace: string,
+  file_id: string,
+) {
   const _context = await generateQueryEmbedding(input);
   const response = createEmbeddingSchema.parse(_context);
 
@@ -78,6 +84,6 @@ export async function queryPinecone(input: string, namespace: string) {
 
   if (Array.isArray(response.response)) {
     const [vector] = response.response;
-    await searchPinecone(vector, namespace);
+    await searchPinecone(vector, namespace, file_id);
   }
 }
