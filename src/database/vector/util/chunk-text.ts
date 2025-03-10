@@ -1,7 +1,7 @@
 import * as LangChain from "@langchain/textsplitters";
 import { type Category } from "@/actions/upload-file";
 import PDFParse from "pdf-parse2";
-import { getCategorieContext } from "@/database/vector/util/openai-helper";
+import { getCategorieContext } from "@/util/openai-service/category-service";
 
 type SplitterConstructor =
   | (new (...args: any[]) => LangChain.TextSplitter)
@@ -16,6 +16,37 @@ const splitterMap: Record<Category, SplitterConstructor> = {
 
 //------------------- Technical Document ------------------- //
 
+async function streamPDF(pdf_id: string) {
+  try {
+    const response = await fetch(
+      `https://api.mathpix.com/v3/pdf/${pdf_id}/stream`,
+      {
+        method: "GET",
+        headers: {
+          app_id: process.env.MATHPIX_APP_ID!,
+          app_key: process.env.MATHPIX_APP_KEY!,
+        },
+      },
+    );
+    if (!response.ok || !response.body) {
+      throw new Error(`Mathpix API error: ${response.statusText}`);
+    }
+    const reader = response.body.getReader();
+    let text = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      text += new TextDecoder().decode(value);
+    }
+    return text;
+  } catch (error) {
+    console.error("Error streaming PDF:", error);
+    throw error;
+  }
+}
+
 async function extractLaTeXFromFile(fileKey: string): Promise<string> {
   const fileURL = process.env.AWS_BASE_URL + fileKey;
   const response = await fetch("https://api.mathpix.com/v3/pdf", {
@@ -27,12 +58,16 @@ async function extractLaTeXFromFile(fileKey: string): Promise<string> {
     },
     body: JSON.stringify({
       url: fileURL,
+      streaming: true,
     }),
   });
   if (!response.ok) {
     throw new Error(`Mathpix API error: ${response.statusText}`);
   }
   const data = await response.json();
+  console.debug("LaTeX extracted from file:", data.pdf_id);
+  const result = await streamPDF(data.pdf_id);
+  console.log(result);
   return data.latex;
 }
 
@@ -85,10 +120,8 @@ export async function chunkText(
     throw new Error("There was no file delivered to chunk");
   }
 
-  console.debug("Hello fro chunkText");
   if (category === "Technical Document") {
     const latex = await extractLaTeXFromFile(fileKey);
-    console.debug(latex);
     return [""];
   }
   return [""];

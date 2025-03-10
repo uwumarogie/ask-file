@@ -1,5 +1,5 @@
 "use server";
-import { generateInputEmbedding } from "@/database/vector/util/openai-helper";
+import { generateInputEmbedding } from "@/util/openai-service/embedding-service";
 import * as z from "zod";
 
 const embeddingSchema = z.object({
