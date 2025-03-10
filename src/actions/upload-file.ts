@@ -1,34 +1,17 @@
 "use server";
 
-import PDFParse from "pdf-parse2";
 import { db } from "@/database/relational/connection";
 import { files } from "@/database/relational/schema";
 import { AWSUploader } from "@/util/aws-file-uploader";
 import { eq } from "drizzle-orm";
-import {
-  generateEmbedding,
-  getCategorieContext,
-} from "@/database/vector/util/openai-helper";
-import { upsertEmbedding } from "@/database/vector/index";
+import { generateEmbedding } from "@/util/openai-service/embedding-service";
+import { upsertEmbedding } from "@/database/vector/pinecone-service";
 import { currentUser } from "@clerk/nextjs/server";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { v4 as uuidv4 } from "uuid";
-import { chunkText } from "@/database/vector/util/chunk-text";
+import { getChunkedTextFromFile } from "@/database/vector/util/chunk-text";
 
-type Category =
-  | "Technical Document"
-  | "News Article"
-  | "Educational Material"
-  | "General"
-  | "Error";
-
-const Categories = {
-  Technical: "Technical Document",
-  News: "News Article",
-  Educational: "Educational Material",
-  General: "General",
-  Error: "Error",
-} as const;
+export type Category = "Technical Document" | "News Article";
 
 export async function insertFileData(file: File) {
   try {
@@ -56,7 +39,7 @@ export async function insertFileData(file: File) {
       file_name: sanitizedFileName,
       file_path: fileKey,
     });
-    await uploadFileEmbeddingToPinecone(file, user.id, fileId);
+    await uploadFileEmbeddingToPinecone(file, user.id, fileId, fileKey);
     return { success: true, response: fileId };
   } catch (error) {
     console.error(error);
@@ -68,9 +51,10 @@ async function uploadFileEmbeddingToPinecone(
   file: File | null,
   userId: string,
   fileId: string,
+  fileKey: string,
 ) {
   try {
-    const chunks = await getChunkedTextFromFile(file);
+    const chunks = await getChunkedTextFromFile(file, fileKey);
     const embeddings = await generateEmbedding(chunks);
     const response = await upsertEmbedding(chunks, embeddings, fileId, userId);
     return response;
@@ -78,48 +62,4 @@ async function uploadFileEmbeddingToPinecone(
     console.error(error);
     throw error;
   }
-}
-
-function getCategory(response: {
-  success: boolean;
-  responseText: string | null;
-}): Category {
-  if (!response.success || response.responseText === null) {
-    return Categories.Error;
-  }
-  const { responseText } = response;
-
-  if (responseText.includes(Categories.Technical)) {
-    return Categories.Technical;
-  }
-  if (responseText.includes(Categories.News)) {
-    return Categories.News;
-  }
-  if (responseText.includes(Categories.Educational)) {
-    return Categories.Educational;
-  }
-  return Categories.General;
-}
-
-async function initialText(file: File | null) {
-  if (!file) {
-    throw new Error("No file selected");
-  }
-  const buffer = await file.arrayBuffer();
-  const PDFParser = new PDFParse();
-  const data = await PDFParser.loadPDF(buffer);
-  if (!data?.text) {
-    throw new Error("No text in the pdf");
-  }
-  return data.text;
-}
-
-async function getChunkedTextFromFile(file: File | null) {
-  const contextText = await initialText(file);
-  const textCategory = await getCategorieContext(contextText.slice(0, 1100));
-  const category = getCategory(textCategory);
-  /* TODO: After getting the category, we need to get the best form for the text LATEX, text for the image without giving it to openai. */
-  const rawText = contextText;
-  const chunkedText = await chunkText(category, rawText);
-  return chunkedText;
 }

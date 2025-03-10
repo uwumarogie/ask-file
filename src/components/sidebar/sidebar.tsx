@@ -19,7 +19,7 @@ export function SideBar() {
     if (pathName.includes("/c")) {
       refetch();
     }
-  }, [pathName]);
+  }, [pathName,refetch]);
 
   return (
     <aside

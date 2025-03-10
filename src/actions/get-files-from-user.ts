@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/database/relational/connection";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { files } from "@/database/relational/schema";
 import { type File } from "@/util/hooks/use-user-files";
 
@@ -16,7 +16,10 @@ export async function getFilesFromUser(userId: string): Promise<Response> {
         file_name: files.file_name,
       })
       .from(files)
-      .where(eq(files.user_id, userId));
+      .where(eq(files.user_id, userId))
+      .limit(10)
+      .orderBy(desc(files.updated_at));
+
     const isError = userFiles.length === 0;
 
     return {

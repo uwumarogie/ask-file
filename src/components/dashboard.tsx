@@ -17,7 +17,7 @@ export function Dashboard() {
       }
     }
     checkUser();
-  }, []);
+  }, [email, userId, username]);
   return (
     <div className="flex flex-col items-center justify-center">
       <Uploader />

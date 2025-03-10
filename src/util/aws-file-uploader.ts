@@ -24,7 +24,6 @@ export class AWSUploader {
       throw new Error("No file selected");
     }
     const fileKey = this.generateFileKey(file.name, this.userId);
-    console.debug("Uploading file to S3:", fileKey);
 
     const buffer = await file.arrayBuffer();
     await this.client.send(
@@ -36,7 +35,6 @@ export class AWSUploader {
       }),
     );
 
-    console.debug("File uploaded to S3:", fileKey);
     return fileKey;
   }
   async uploadMany(files: File[]) {
@@ -45,9 +43,7 @@ export class AWSUploader {
         files.map(async (file) => this.uploadFile(file)),
       );
 
-      return paths.map((path) => {
-        path;
-      });
+      return paths;
     } catch (error) {
       console.error(error);
       throw error;
