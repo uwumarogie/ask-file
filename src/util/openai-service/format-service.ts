@@ -3,7 +3,7 @@ import { formatStringToArray } from "@/util/prompts/format-string-to-array";
 
 export async function structureFormatStringToArray(
   text: string,
-): Promise<{ success: boolean; responseText: string | null }> {
+): Promise<{ success: boolean; response: string | null }> {
   try {
     const prompt = formatStringToArray(text);
     const response = await openai.chat.completions.create({
@@ -17,9 +17,9 @@ export async function structureFormatStringToArray(
       temperature: 1.0,
     });
 
-    return { success: true, responseText: response.choices[0].message.content };
+    return { success: true, response: response.choices[0].message.content };
   } catch (error) {
     console.error("Error in structureFormatStringToArray:", error);
-    return { success: false, responseText: "Something went wrong" };
+    return { success: false, response: "Something went wrong" };
   }
 }

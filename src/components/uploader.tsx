@@ -41,6 +41,9 @@ export function Uploader() {
     }
   }
 
+  //NOTE: Check if the file with the same name is already in the database.
+  // Let the user choose either to overwrite or keep the old file or rename the new file to another name.
+  // Additional note: AWS S3 overrides the file name if the same name is already in the bucket.
   return (
     <div className="flex flex-col space-y-3">
       <form
@@ -80,7 +83,7 @@ export function Uploader() {
               "Drop the file here..."
             ) : (
               <span className="text-white">
-                Drag an Drop file here or{" "}
+                Drag and Drop file here or{" "}
                 <span className="underline text-blue-500">Choose file</span>
               </span>
             )}

@@ -26,7 +26,7 @@ export async function syncUser(
       .where(eq(user.user_id, _context.userId));
 
     if (existingUser.length > 0) {
-      throw new Error("User already exists");
+      return { success: false, response: "User already exists" };
     } else {
       await db
         .insert(user)

@@ -5,7 +5,7 @@ import { files } from "@/database/relational/schema";
 import { AWSUploader } from "@/util/aws-file-uploader";
 import { eq } from "drizzle-orm";
 import { generateEmbedding } from "@/util/openai-service/embedding-service";
-import { upsertEmbedding } from "@/database/vector/index";
+import { upsertEmbedding } from "@/database/vector/pinecone-service";
 import { currentUser } from "@clerk/nextjs/server";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { v4 as uuidv4 } from "uuid";
@@ -55,10 +55,9 @@ async function uploadFileEmbeddingToPinecone(
 ) {
   try {
     const chunks = await getChunkedTextFromFile(file, fileKey);
-    //const embeddings = await generateEmbedding(chunks);
-    //const response = await upsertEmbedding(chunks, embeddings, fileId, userId);
-    // return response;
-    return "";
+    const embeddings = await generateEmbedding(chunks);
+    const response = await upsertEmbedding(chunks, embeddings, fileId, userId);
+    return response;
   } catch (error) {
     console.error(error);
     throw error;

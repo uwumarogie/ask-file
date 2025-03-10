@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { queryPinecone } from "@/database/vector";
+import { queryPinecone } from "@/database/vector/pinecone-service";
 import { useUser } from "@clerk/nextjs";
-import {useParams} from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function ChatInput() {
   const [input, setInput] = React.useState("");
-  const params = useParams<{slug: string}>();
+  const params = useParams<{ slug: string }>();
   const { user } = useUser();
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
