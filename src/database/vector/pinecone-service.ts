@@ -6,12 +6,12 @@ import * as z from "zod";
 
 const createEmbeddingSchema = z.union([
   z.object({
-    success: z.boolean(),
-    response: z.array(z.array(z.number())),
+    success: z.literal(true),
+    embedding: z.array(z.array(z.number())),
   }),
   z.object({
-    success: z.boolean(),
-    response: z.string(),
+    success: z.literal(false),
+    error: z.string(),
   }),
 ]);
 
@@ -50,6 +50,21 @@ export async function upsertEmbedding(
   }
 }
 
+export async function deleteEmbeddingFromPinecone(
+  file_id: string,
+  namespace: string,
+) {
+  const pinecone = await initializePinecone();
+  const index = pinecone.index("ask-file", PINECONE_HOST);
+  const pageOneList = await index.listPaginated({
+    prefix: `chunk-${file_id}-`,
+  });
+  console.debug("pageOneList", pageOneList);
+  const pageVectorList = pageOneList?.vectors?.map((item) => item.id);
+  console.debug("pageVectorList", pageVectorList);
+  await index.namespace(namespace).deleteMany(pageVectorList!);
+}
+
 export async function searchPinecone(
   query: number[],
   namespace: string,
@@ -77,13 +92,11 @@ export async function queryPinecone(
   const _context = await generateQueryEmbedding(input);
   const response = createEmbeddingSchema.parse(_context);
 
-  if (!response.success && response.response instanceof String) {
-    console.error(response.response);
+  if (!response.success) {
+    console.error(response.error);
     throw new Error("Failed generating the embedding of the input");
-  }
-
-  if (Array.isArray(response.response)) {
-    const [vector] = response.response;
+  } else {
+    const [vector] = response.embedding;
     await searchPinecone(vector, namespace, file_id);
   }
 }

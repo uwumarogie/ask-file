@@ -1,5 +1,5 @@
 import React from "react";
-import { getFilesFromUser } from "@/actions/get-files-from-user";
+import { fetchUserFiles } from "@/actions/fetch-user-files";
 export type File = {
   file_id: string;
   file_name: string;
@@ -20,7 +20,7 @@ export function useUserFile(userId?: string) {
     setIsLoading(true);
     setHasError(false);
 
-    getFilesFromUser(userId)
+    fetchUserFiles(userId)
       .then((response) => {
         setFiles(response.files);
         setHasError(response.hasError);

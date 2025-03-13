@@ -1,14 +1,16 @@
 "use server";
-import { db } from "@/database/relational/connection";
+import db from "@/database/relational/connection";
 import { desc, eq } from "drizzle-orm";
 import { files } from "@/database/relational/schema";
 import { type File } from "@/util/hooks/use-user-files";
 
-type Response = {
+type FetchUserFilesResult = {
   files: Array<File>;
   hasError: boolean;
 };
-export async function getFilesFromUser(userId: string): Promise<Response> {
+export async function fetchUserFiles(
+  userId: string,
+): Promise<FetchUserFilesResult> {
   try {
     const userFiles = await db
       .select({
@@ -20,14 +22,14 @@ export async function getFilesFromUser(userId: string): Promise<Response> {
       .limit(10)
       .orderBy(desc(files.updated_at));
 
-    const isError = userFiles.length === 0;
+    const isEmpty = userFiles.length === 0;
 
     return {
       files: userFiles,
-      hasError: isError,
+      hasError: isEmpty,
     };
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching files", error);
     return {
       files: [],
       hasError: true,

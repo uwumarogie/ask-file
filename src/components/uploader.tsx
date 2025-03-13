@@ -1,20 +1,24 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { insertFileData } from "@/actions/upload-file";
+import { uploadFileAcrossServices } from "@/actions/upload-file-into-services";
 import { useDropzone } from "react-dropzone";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import { checkExistingFileName } from "@/actions/check-existence-of-file";
 import * as z from "zod";
+import { sanitizeFileName } from "@/util/file-modification/util";
+import { FileExistsModal } from "@/components/file-exists-modal";
 
 const responseSchema = z.object({
   success: z.boolean(),
-  response: z.string().uuid(),
+  filePath: z.string().uuid(),
 });
 
-export function Uploader() {
+export function Uploader({ userId }: { userId: string | undefined }) {
   const [file, setFile] = React.useState<File | null>(null);
   const [isDragActive, setIsDragActive] = React.useState(false);
+  const [fileAlreadyExists, setFileAlreadyExists] = React.useState(false);
   const router = useRouter();
   const { getRootProps, getInputProps, isDragReject } = useDropzone({
     onDrop,
@@ -28,9 +32,15 @@ export function Uploader() {
   React.useEffect(() => {
     (async () => {
       if (file) {
-        const _context = await insertFileData(file);
-        const data = responseSchema.parse(_context);
-        router.push(`/c/${data.response}`);
+        const sanitizedFileName = sanitizeFileName(file.name);
+
+        const checkFileExists = await checkExistingFileName(sanitizedFileName);
+        if (!checkFileExists.response) {
+          const _context = await uploadFileAcrossServices(file);
+          const data = responseSchema.parse(_context);
+          router.push(`/c/${data.filePath}`);
+        }
+        setFileAlreadyExists(checkFileExists.response);
       }
     })();
   }, [file, router]);
@@ -41,11 +51,15 @@ export function Uploader() {
     }
   }
 
-  //NOTE: Check if the file with the same name is already in the database.
-  // Let the user choose either to overwrite or keep the old file or rename the new file to another name.
-  // Additional note: AWS S3 overrides the file name if the same name is already in the bucket.
   return (
     <div className="flex flex-col space-y-3">
+      {fileAlreadyExists && file && userId && (
+        <FileExistsModal
+          file={file}
+          onClose={() => setFileAlreadyExists(false)}
+          userId={userId}
+        />
+      )}
       <form
         {...getRootProps()}
         className={clsx(
