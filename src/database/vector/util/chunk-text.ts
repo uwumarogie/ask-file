@@ -1,7 +1,7 @@
 //NOTE: Refactor the entire file after finishing the splitting feature
 
 import * as LangChain from "@langchain/textsplitters";
-import { type Category } from "@/actions/upload-file";
+import { type Category } from "@/actions/upload-file-into-services";
 import PDFParse from "pdf-parse2";
 import { getCategorieContext } from "@/util/openai-service/category-service";
 import { structureFormatStringToArray } from "@/util/openai-service/format-service";
@@ -55,7 +55,6 @@ async function streamPDF(pdf_id: string) {
       text += new TextDecoder().decode(value);
     }
     const resObject = await structureFormatStringToArray(text);
-    console.debug("resObject", resObject);
     return parseResponse(resObject.response);
   } catch (error) {
     console.error("Error streaming PDF:", error);

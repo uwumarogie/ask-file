@@ -1,7 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
-export class AWSUploader {
+export class AWSService {
   private client: S3Client;
   private userId: string;
   constructor(userId: string) {
@@ -15,16 +15,15 @@ export class AWSUploader {
     this.userId = userId;
   }
 
-  private generateFileKey(originalFileName: string, userId: string) {
+  public generateFileKey(originalFileName: string, userId: string) {
     return `users/${userId}/files/${originalFileName}`;
   }
 
-  async uploadFile(file: File | null) {
+  async uploadFileToS3(file: File | null) {
     if (!file) {
       throw new Error("No file selected");
     }
     const fileKey = this.generateFileKey(file.name, this.userId);
-
     const buffer = await file.arrayBuffer();
     await this.client.send(
       new PutObjectCommand({
@@ -37,10 +36,21 @@ export class AWSUploader {
 
     return fileKey;
   }
+
+  async deleteFile(fileName: string) {
+    const fileKey = this.generateFileKey(fileName, this.userId);
+    await this.client.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME!,
+        Key: fileKey,
+      }),
+    );
+  }
+
   async uploadMany(files: File[]) {
     try {
       const paths = await Promise.all(
-        files.map(async (file) => this.uploadFile(file)),
+        files.map(async (file) => this.uploadFileToS3(file)),
       );
 
       return paths;

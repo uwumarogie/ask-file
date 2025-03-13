@@ -12,7 +12,7 @@ export function Dashboard() {
   const email = user?.emailAddresses[0].emailAddress;
   React.useEffect(() => {
     async function checkUser() {
-      if (userId) {
+      if (userId && username && email) {
         await syncUser(userId, username, email);
       }
     }
@@ -20,7 +20,7 @@ export function Dashboard() {
   }, [email, userId, username]);
   return (
     <div className="flex flex-col items-center justify-center">
-      <Uploader />
+      <Uploader userId={userId} />
     </div>
   );
 }

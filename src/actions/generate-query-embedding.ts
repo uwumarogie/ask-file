@@ -17,17 +17,25 @@ const embeddingSchema = z.object({
   }),
 });
 
-export async function generateQueryEmbedding(input: string) {
+type GenerateEmbeddingResult =
+  | { success: true; embedding: number[][] }
+  | { success: false; error: string };
+
+export async function generateQueryEmbedding(
+  input: string,
+): Promise<GenerateEmbeddingResult> {
   try {
-    const _context = await generateInputEmbedding(input);
-    const response = embeddingSchema.parse(_context);
+    const embeddingResponse = await generateInputEmbedding(input);
+    const response = embeddingSchema.parse(embeddingResponse);
     const embedding = response.data.map((item) => item.embedding);
+
     if (embedding.length === 0) {
-      return { success: false, response: "The embedding was empty." };
+      return { success: false, error: "The embedding array was empty." };
     }
-    return { success: true, response: embedding };
+
+    return { success: true, embedding: embedding };
   } catch (error) {
-    console.error(error);
-    return { success: false, response: error };
+    console.error("Error generating query embedding", error);
+    return { success: false, error: (error as Error).message };
   }
 }

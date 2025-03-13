@@ -7,4 +7,5 @@ if (DATABASE_URL === undefined) {
 }
 
 const client = postgres(DATABASE_URL, { prepare: false });
-export const db = drizzle({ client });
+const db = drizzle({ client });
+export default db;

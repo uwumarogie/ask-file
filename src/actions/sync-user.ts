@@ -1,7 +1,7 @@
 "use server";
 import * as z from "zod";
-import { user } from "@/database/relational/schema";
-import { db } from "@/database/relational/connection";
+import { users } from "@/database/relational/schema";
+import db from "@/database/relational/connection";
 import { eq } from "drizzle-orm";
 
 const userSchema = z.object({
@@ -10,41 +10,35 @@ const userSchema = z.object({
   email: z.string(),
 });
 export async function syncUser(
-  userId?: string,
-  username?: string | null,
-  email?: string,
+  userId: string,
+  username: string | null,
+  email: string,
 ) {
   try {
     if (!userId || !email || !username) {
       throw new Error("Invalid user data");
     }
-    const _context = userSchema.parse({ userId, username, email });
+    const userData = userSchema.parse({ userId, username, email });
 
     const existingUser = await db
       .select()
-      .from(user)
-      .where(eq(user.user_id, _context.userId));
+      .from(users)
+      .where(eq(users.user_id, userData.userId));
 
     if (existingUser.length > 0) {
       return { success: false, response: "User already exists" };
     } else {
       await db
-        .insert(user)
-        .values({
-          user_id: _context.userId,
-          username: _context.username!,
-          email: _context.email,
+        .update(users)
+        .set({
+          username: userData.username!,
+          email: userData.email,
         })
-        .onConflictDoUpdate({
-          target: user.username,
-          set: {
-            email: _context.email,
-          },
-        });
+        .where(eq(users.user_id, userData.userId));
+      return { success: true, response: userData.userId };
     }
-    return { success: true, response: _context.userId };
   } catch (error) {
-    console.error(error);
+    console.error("Error syncing error", error);
     return {
       success: false,
       response: (error as Error).message,
