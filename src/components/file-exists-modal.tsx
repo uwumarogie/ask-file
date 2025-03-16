@@ -1,5 +1,6 @@
-import { overwriteFileAcrossServices } from "@/actions/overwrite-file";
+import { overwriteFileAcrossServices } from "@/actions/overwrite-file-across-services";
 
+// NOTE; this modal needs a way to show  the user when the upload is complete
 export function FileExistsModal({
   file,
   onClose,
@@ -10,7 +11,12 @@ export function FileExistsModal({
   userId: string;
 }) {
   async function handleOverwrite() {
-    await overwriteFileAcrossServices(file, userId);
+    const overwriteResult = await overwriteFileAcrossServices(file, userId);
+    if (!overwriteResult.success) {
+      throw new Error("Failed to overwrite file");
+    } else {
+      onClose();
+    }
   }
 
   return (

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import Image from "next/image";
 import { uploadFileAcrossServices } from "@/actions/upload-file-into-services";
 import { useDropzone } from "react-dropzone";
@@ -15,11 +15,54 @@ const responseSchema = z.object({
   filePath: z.string().uuid(),
 });
 
+// NOTE: this component needs a way to show the user when the upload is complete
 export function Uploader({ userId }: { userId: string | undefined }) {
   const [file, setFile] = React.useState<File | null>(null);
   const [isDragActive, setIsDragActive] = React.useState(false);
   const [fileAlreadyExists, setFileAlreadyExists] = React.useState(false);
   const router = useRouter();
+
+  const handleUpload = useCallback(
+    async (file: File) => {
+      if (!file) {
+        throw new Error("File does not exist");
+      }
+      const sanitizedFileName = sanitizeFileName(file.name);
+      const { response: exists } =
+        await checkExistingFileName(sanitizedFileName);
+      if (!exists) {
+        const _context = await uploadFileAcrossServices(file);
+        const data = responseSchema.parse(_context);
+        if (!data.success) {
+          throw new Error("Failed to upload file");
+        } else {
+          router.push(`/c/${data.filePath}`);
+        }
+      }
+      setFileAlreadyExists(exists);
+    },
+    [router],
+  );
+
+  React.useEffect(() => {
+    if (file) {
+      handleUpload(file);
+    }
+  }, [file, handleUpload]);
+
+  function onDrop(acceptedFiles: File[]) {
+    if (acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+    }
+  }
+
+  function selectFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFile(file);
+    }
+  }
+
   const { getRootProps, getInputProps, isDragReject } = useDropzone({
     onDrop,
     accept: { "application/pdf": [".pdf"] },
@@ -28,28 +71,6 @@ export function Uploader({ userId }: { userId: string | undefined }) {
     onDragEnter: () => setIsDragActive(true),
     onDragLeave: () => setIsDragActive(false),
   });
-
-  React.useEffect(() => {
-    (async () => {
-      if (file) {
-        const sanitizedFileName = sanitizeFileName(file.name);
-
-        const checkFileExists = await checkExistingFileName(sanitizedFileName);
-        if (!checkFileExists.response) {
-          const _context = await uploadFileAcrossServices(file);
-          const data = responseSchema.parse(_context);
-          router.push(`/c/${data.filePath}`);
-        }
-        setFileAlreadyExists(checkFileExists.response);
-      }
-    })();
-  }, [file, router]);
-
-  function onDrop(acceptedFiles: File[]) {
-    if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]);
-    }
-  }
 
   return (
     <div className="flex flex-col space-y-3">
@@ -60,16 +81,16 @@ export function Uploader({ userId }: { userId: string | undefined }) {
           userId={userId}
         />
       )}
-      <form
+      <div
         {...getRootProps()}
         className={clsx(
           "flex flex-col items-center justify-center border-4 border-dashed lg:p-56 p-52" +
             "cursor-pointer rounded-2xl transition-colors duration-200",
-          isDragActive
-            ? "border-green-400"
-            : isDragReject
-              ? "border-red-400"
-              : "border-white",
+          {
+            "border-green-400": isDragActive,
+            "border-red-400": isDragReject,
+            "border-white": !isDragActive && !isDragReject,
+          },
         )}
       >
         <input
@@ -77,11 +98,7 @@ export function Uploader({ userId }: { userId: string | undefined }) {
           name="file"
           type="file"
           id="file"
-          onChange={(e) => {
-            if (e.target?.files) {
-              setFile(e.target?.files[0]);
-            }
-          }}
+          onChange={selectFile}
           accept=".pdf"
           className="hidden"
         />
@@ -106,7 +123,8 @@ export function Uploader({ userId }: { userId: string | undefined }) {
             <p className="text-red-500 mt-2">Unsupported file type or size.</p>
           )}
         </label>
-      </form>
+      </div>
+
       {!file && (
         <div className="flex flex-row justify-between text-white">
           <span>Supported format: PDF</span>

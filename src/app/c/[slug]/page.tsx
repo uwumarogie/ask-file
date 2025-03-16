@@ -1,6 +1,7 @@
 import React from "react";
 import ChatInput from "@/components/chat/chat-input";
-export default async function Page() {
+export default async function Page({ params }: { params: { slug: string } }) {
+  console.log("params", params);
   return (
     <div className="flex flex-col justify-center items-center min-h-screen">
       <span className="text-3xl text-white font-bold">

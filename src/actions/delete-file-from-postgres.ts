@@ -11,7 +11,9 @@ export async function deleteFileFromDatabase(
     const existingFiles = await db
       .select()
       .from(files)
-      .where(eq(files.file_name, sanitizedFileName));
+      .where(
+        and(eq(files.file_name, sanitizedFileName), eq(files.user_id, userId)),
+      );
 
     if (existingFiles.length === 0) {
       throw new Error("File does not exist");
@@ -23,6 +25,7 @@ export async function deleteFileFromDatabase(
         and(eq(files.file_name, sanitizedFileName), eq(files.user_id, userId)),
       );
 
+    console.debug("existingFiles", existingFiles);
     return { success: true, fileId: existingFiles[0].file_id };
   } catch (error) {
     console.error(error);

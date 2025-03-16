@@ -6,33 +6,36 @@ import { uploadFileToDatabase } from "@/actions/upload-file-into-services";
 import { deleteEmbeddingFromPinecone } from "@/database/vector/pinecone-service";
 import { uploadFileEmbeddingToPinecone } from "@/actions/upload-file-into-services";
 
-/**
- * Overwrites an existing file in all connected services (POSTGRES, S3, PINECONE)
- **/
-
 export async function overwriteFileAcrossServices(file: File, userId: string) {
-  try {
-    const awsService = new AWSService(userId);
-    const sanitizedFileName = sanitizeFileName(file.name);
+  const awsService = new AWSService(userId);
+  const sanitizedFileName = sanitizeFileName(file.name);
+  const fileKey = awsService.generateFileKey(file.name, userId);
 
+  try {
     await awsService.deleteFile(sanitizedFileName);
-    await deleteEmbeddingFromPinecone(sanitizedFileName, userId);
+    await awsService.uploadFileToS3(file);
+
     const deletionResult = await deleteFileFromDatabase(
       sanitizedFileName,
       userId,
     );
+    const fileResponse = await uploadFileToDatabase(file);
 
-    await uploadFileToDatabase(file);
-    await awsService.uploadFileToS3(file);
-    const fileKey = new AWSService(userId).generateFileKey(file.name, userId);
+    if (!fileResponse.fileId) {
+      throw new Error("Failed to upload file to the database");
+    }
+
+    await deleteEmbeddingFromPinecone(deletionResult.fileId, userId);
     await uploadFileEmbeddingToPinecone(
       file,
       userId,
-      deletionResult.fileId,
+      fileResponse.fileId!,
       fileKey,
     );
+
+    return { success: true, fileId: fileResponse.fileId };
   } catch (error) {
     console.error("overwriteFileAcrossServices failed", error);
-    throw error;
+    return { success: false, error: (error as Error).message };
   }
 }

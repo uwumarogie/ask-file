@@ -58,10 +58,10 @@ export async function uploadFileAcrossServices(file: File) {
       uploadResult.awsFileKey!,
     );
 
-    return uploadResult.fileId!;
+    return { success: true, filePath: uploadResult.fileId! };
   } catch (error) {
     console.error("Error uploading file across services", error);
-    throw error;
+    return { success: false, error: (error as Error).message };
   }
 }
 

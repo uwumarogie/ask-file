@@ -54,14 +54,17 @@ export async function deleteEmbeddingFromPinecone(
   file_id: string,
   namespace: string,
 ) {
+  if (file_id.length === 0 || namespace.length === 0) {
+    throw new Error("file_id or namespace is empty");
+  }
   const pinecone = await initializePinecone();
-  const index = pinecone.index("ask-file", PINECONE_HOST);
+  const index = pinecone.index("ask-file", PINECONE_HOST).namespace(namespace);
+
+  const prefix = `chunk-${file_id}`;
   const pageOneList = await index.listPaginated({
-    prefix: `chunk-${file_id}-`,
+    prefix: prefix,
   });
-  console.debug("pageOneList", pageOneList);
   const pageVectorList = pageOneList?.vectors?.map((item) => item.id);
-  console.debug("pageVectorList", pageVectorList);
   await index.namespace(namespace).deleteMany(pageVectorList!);
 }
 

@@ -5,7 +5,6 @@ Nice display the pdf in the application would be nice for the use to see the fil
 Look at Cleanlab
 
 
-important TODO: improve the formatService prompt with two example to pass the function parseResponse
 
 
 
