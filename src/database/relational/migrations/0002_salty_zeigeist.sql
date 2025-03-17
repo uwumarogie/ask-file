@@ -1,1 +1,0 @@
-ALTER TABLE "user" ALTER COLUMN "user_id" SET DEFAULT gen_random_uuid();

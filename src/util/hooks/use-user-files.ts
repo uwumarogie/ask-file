@@ -2,7 +2,7 @@ import React from "react";
 import { fetchUserFiles } from "@/actions/fetch-user-files";
 export type File = {
   file_id: string;
-  file_name: string;
+  file_description: string;
 };
 export function useUserFile(userId?: string) {
   const [files, setFiles] = React.useState<Array<File>>([]);

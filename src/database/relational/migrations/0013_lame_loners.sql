@@ -1,0 +1,1 @@
+ALTER TABLE "files" ADD COLUMN "file_description" text NOT NULL;

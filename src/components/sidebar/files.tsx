@@ -3,17 +3,34 @@ import React from "react";
 import Link from "next/link";
 import { File } from "@/util/hooks/use-user-files";
 import Image from "next/image";
-import { useSideBarStore } from "@/util/hooks/use-sidebar-store";
-
+import { renameFile } from "@/actions/rename-file-in-the-layout";
+import { useRouter } from "next/navigation";
 type FileProps = {
   files: File[];
   isLoading: boolean;
   hasError: boolean;
+  userId?: string;
 };
 
 //NOTE: On double click, let the user change the file name
-export default function Files({ files, isLoading, hasError }: FileProps) {
-  const { toggle } = useSideBarStore((state) => state);
+export default function Files({
+  files,
+  isLoading,
+  hasError,
+  userId,
+}: FileProps) {
+  const [isEditingName, setIsEditingName] = React.useState(false);
+  const [fileName, setFileName] = React.useState("");
+
+  const router = useRouter();
+  async function handleDoubleClick(file: File) {
+    const response = await renameFile(fileName, file.file_id, userId);
+    if (response.success) {
+      setIsEditingName(false);
+      router.refresh();
+    }
+    router.refresh();
+  }
 
   return (
     <React.Fragment>
@@ -30,10 +47,30 @@ export default function Files({ files, isLoading, hasError }: FileProps) {
           <Link
             key={file.file_id}
             href={`/c/${file.file_id}`}
-            onClick={toggle}
             className="flex p-1 hover:bg-gray-800 hover:rounded-xl cursor-pointer justify-between"
+            onDoubleClick={() => {
+              setIsEditingName(true);
+            }}
           >
-            <span>{file.file_name}</span>
+            {isEditingName ? (
+              <form className="flex flex-col spac-x-5">
+                <input
+                  type="text"
+                  onChange={(e) => setFileName(e.target.value)}
+                  defaultValue={file.file_description}
+                  className="w-full bg-gray-800 text-white rounded-xl p-2 outline-none"
+                />
+                <button
+                  onClick={async () => await handleDoubleClick(file)}
+                  className="hover:bg-gray-500"
+                >
+                  Save
+                </button>
+              </form>
+            ) : (
+              <span>{file.file_description}</span>
+            )}
+
             <button className="relative group inline-block">
               <span
                 className="absolute bottom-7 -right-1 text-white bg-gray-800 border-2

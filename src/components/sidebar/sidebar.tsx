@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 export function SideBar() {
   const { isOpen, toggle } = useSideBarStore((state) => state);
   const { user } = useUser();
+
   const { files, isLoading, hasError, refetch } = useUserFile(user?.id);
 
   const pathName = usePathname();
@@ -19,7 +20,7 @@ export function SideBar() {
     if (pathName.includes("/c")) {
       refetch();
     }
-  }, [pathName,refetch]);
+  }, [pathName, refetch]);
 
   return (
     <aside
@@ -42,7 +43,6 @@ export function SideBar() {
           path="/icons/move-sidebar-icon.svg"
           alt="Move sidebar icon"
         />
-
         <SidebarButton
           onClick={() => redirect("/")}
           path="/icons/create-new-file-icon.svg"
@@ -60,7 +60,12 @@ export function SideBar() {
                 alt="Move sidebar icon"
               />
             </div>
-            <Files files={files} isLoading={isLoading} hasError={hasError} />
+            <Files
+              files={files}
+              isLoading={isLoading}
+              hasError={hasError}
+              userId={user?.id}
+            />
           </ul>
         </div>
       )}
