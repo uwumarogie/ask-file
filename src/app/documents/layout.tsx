@@ -7,9 +7,9 @@ export default function DocumentLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <React.Fragment>
       <DocumentSidebar />
       {children}
-    </div>
+    </React.Fragment>
   );
 }

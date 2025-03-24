@@ -1,12 +1,12 @@
+import React from "react";
 import { SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 export default function Login() {
   return (
-    <div>
+    <React.Fragment>
       <SignedOut>
         <SignInButton />
       </SignedOut>
-
       <UserButton
         appearance={{
           elements: {
@@ -14,6 +14,6 @@ export default function Login() {
           },
         }}
       />
-    </div>
+    </React.Fragment>
   );
 }
