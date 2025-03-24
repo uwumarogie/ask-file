@@ -1,5 +1,5 @@
-import { Dashboard } from "@/components/dashboard";
+import { Index } from "@/components/landing-page";
 export const dynamic = "force-dynamic";
 export default function Home() {
-  return <Dashboard />;
+  return <Index />;
 }

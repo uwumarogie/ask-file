@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type SideBarStore = {
+type OpenCloseCompoent = {
   isOpen: boolean;
   toggle: () => void;
 };
 
-export const useSideBarStore = create<SideBarStore>()(
+export const useSideBarStore = create<OpenCloseCompoent>()(
   persist(
     (set) => ({
       isOpen: false,

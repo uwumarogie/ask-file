@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
-import { SideBar } from "@/components/sidebar/sidebar";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Footer } from "@/components/landing-page/footer";
+import { LandingPageNavbar } from "@/components/landing-page/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,21 +29,8 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} bg-neutral-700 antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <SideBar />
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <div className="flex p-4 justify-end">
-            <UserButton
-              appearance={{
-                elements: {
-                  userButtonAvatarBox: "size-10",
-                },
-              }}
-            />
-          </div>
           {children}
         </body>
       </html>

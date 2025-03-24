@@ -6,11 +6,11 @@ import { useUserFile } from "@/util/hooks/use-user-files";
 import { redirect } from "next/navigation";
 import Files from "./files";
 import SidebarButton from "./sidebar-button";
-import { useSideBarStore } from "@/util/hooks/use-sidebar-store";
+import { useSideBarStore } from "@/util/hooks/global-state-management";
 import { usePathname } from "next/navigation";
 
 export function SideBar() {
-  const { isOpen, toggle } = useSideBarStore((state) => state);
+  const { isOpen, toggle } = useSideBarStore();
   const { user } = useUser();
 
   const { files, isLoading, hasError, refetch } = useUserFile(user?.id);
@@ -27,7 +27,7 @@ export function SideBar() {
       className={clsx(
         "fixed top-0 left-0 z-40 h-screen bg-black text-white transition-all sm:translate-x-0",
         isOpen
-          ? "lg:w-64 md:w-64 w-full bg-black"
+          ? "lg:w-72 md:w-72 w-full bg-black"
           : "w-15 lg:w-20 bg-neutral-700 lg:bg-black",
       )}
       aria-label="Sidebar"
