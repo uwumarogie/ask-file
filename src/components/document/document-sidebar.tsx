@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { cn } from "@/util/cn";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   FileText,
   MessageSquare,
@@ -13,7 +14,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export function DocumentSidebar() {
+type User = {
+  name: string | null;
+  email: string;
+  image: string;
+};
+
+type DocuSidebar = {
+  user: User;
+};
+
+export function DocumentSidebar({ user }: DocuSidebar) {
   const [collapsed, setCollapsed] = useState(false);
   const location = usePathname();
 
@@ -43,7 +54,7 @@ export function DocumentSidebar() {
     <div
       className={cn(
         "h-screen fixed left-0 top-0 z-40 flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ease-in-out",
-        collapsed ? "w-16" : "w-56",
+        collapsed ? "w-16" : "w-64",
       )}
     >
       <div className="flex items-center p-4 h-16 border-b border-sidebar-border">
@@ -90,13 +101,23 @@ export function DocumentSidebar() {
       <div className="p-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-            <span className="font-medium text-sm">U</span>
+            {user.image ? (
+              <Image
+                src={user.image}
+                alt="user"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+            ) : (
+              <>U</>
+            )}{" "}
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="text-sm font-medium">User</span>
+              <span className="text-sm font-medium">{user.name}</span>
               <span className="text-xs text-asidebar-foreground/60">
-                user@example.com
+                {user.email}
               </span>
             </div>
           )}

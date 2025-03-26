@@ -2,17 +2,16 @@ import React, { useState, useCallback } from "react";
 import { Upload, File, FileText, X } from "lucide-react";
 import { cn } from "@/util/cn";
 import { useToast } from "@/util/hooks/use-toast";
-
-interface FileUploadZoneProps {
+type FileUploadZoneProps = {
   onFilesUploaded?: (files: File[]) => void;
   accept?: string;
   multiple?: boolean;
   maxSize?: number; // in MB
-}
+};
 
 export function FileUploadZone({
   onFilesUploaded,
-  accept = ".pdf,.md,.txt,.doc,.docx",
+  accept = ".pdf",
   multiple = true,
   maxSize = 10, // Default 10MB
 }: FileUploadZoneProps) {
@@ -30,7 +29,7 @@ export function FileUploadZone({
     setIsDragging(false);
   }, []);
 
-  const validateFile = (file: File): boolean => {
+  function validateFile(file: File): boolean {
     // Check file size (convert maxSize from MB to bytes)
     if (file.size > maxSize * 1024 * 1024) {
       toast({
@@ -59,9 +58,9 @@ export function FileUploadZone({
     }
 
     return true;
-  };
+  }
 
-  const processFiles = (fileList: FileList) => {
+  function processFiles(fileList: FileList) {
     const validFiles = Array.from(fileList).filter(validateFile);
 
     if (validFiles.length > 0) {
@@ -77,7 +76,7 @@ export function FileUploadZone({
         description: `${validFiles.length} file(s) successfully uploaded`,
       });
     }
-  };
+  }
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
@@ -91,13 +90,13 @@ export function FileUploadZone({
     [files, multiple, onFilesUploaded],
   );
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
       processFiles(e.target.files);
     }
-  };
+  }
 
-  const removeFile = (index: number) => {
+  function removeFile(index: number) {
     const newFiles = [...files];
     newFiles.splice(index, 1);
     setFiles(newFiles);
@@ -105,23 +104,7 @@ export function FileUploadZone({
     if (onFilesUploaded) {
       onFilesUploaded(newFiles);
     }
-  };
-
-  const getFileIcon = (fileName: string) => {
-    const extension = fileName.split(".").pop()?.toLowerCase();
-
-    switch (extension) {
-      case "pdf":
-        return <FileText className="w-8 h-8 text-red-500" />;
-      case "doc":
-      case "docx":
-        return <FileText className="w-8 h-8 text-blue-500" />;
-      case "md":
-        return <FileText className="w-8 h-8 text-green-500" />;
-      default:
-        return <File className="w-8 h-8 text-gray-500" />;
-    }
-  };
+  }
 
   return (
     <div className="w-full space-y-4">
@@ -143,8 +126,8 @@ export function FileUploadZone({
           </div>
           <h3 className="text-lg font-medium mb-1">Upload your documents</h3>
           <p className="text-sm text-muted-foreground mb-4 max-w-md">
-            Drag and drop your files here, or click to browse. Supports PDF,
-            Markdown, and text documents up to {maxSize}MB.
+            Drag and drop your file here, or click to browse. Supports PDF up to{" "}
+            {maxSize}MB.
           </p>
           <label
             htmlFor="fileInput"
@@ -172,34 +155,60 @@ export function FileUploadZone({
           </h4>
           <ul className="space-y-2 max-h-60 overflow-y-auto pr-2">
             {files.map((file, index) => (
-              <li
+              <FileUploadCard
+                file={file}
+                index={index}
+                removeFile={removeFile}
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between bg-card shadow-subtle p-3 rounded-lg animate-slide-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="flex items-center space-x-3">
-                  {getFileIcon(file.name)}
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium truncate max-w-[200px]">
-                      {file.name}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => removeFile(index)}
-                  className="p-1 rounded-full hover:bg-secondary transition-colors"
-                  aria-label="Remove file"
-                >
-                  <X className="w-4 h-4 text-muted-foreground" />
-                </button>
-              </li>
+              />
             ))}
           </ul>
         </div>
       )}
+    </div>
+  );
+}
+
+function FileUploadCard({
+  file,
+  index,
+  removeFile,
+}: {
+  file: File;
+  index: number;
+  removeFile: (index: number) => void;
+}) {
+  function getFileIcon(fileName: string) {
+    const extension = fileName.split(".").pop()?.toLowerCase();
+    if (extension === "pdf") {
+      return <FileText className="w-8 h-8 text-red-500" />;
+    } else {
+      return <File className="w-8 h-8 text-gray-500" />;
+    }
+  }
+  return (
+    <div
+      className="flex items-center justify-between bg-card shadow-subtle p-3 rounded-lg animate-slide-in"
+      style={{ animationDelay: `${index * 0.05}s` }}
+    >
+      <div className="flex items-center space-x-3">
+        {getFileIcon(file.name)}
+        <div className="flex flex-col">
+          <span className="text-sm font-medium truncate max-w-[200px]">
+            {file.name}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {(file.size / 1024 / 1024).toFixed(2)} MB
+          </span>
+        </div>
+      </div>
+      <button
+        onClick={() => removeFile(index)}
+        className="p-1 rounded-full hover:bg-secondary transition-colors"
+        aria-label="Remove file"
+      >
+        <X className="w-4 h-4 text-muted-foreground" />
+      </button>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { SearchBar } from "@/components/search-bar";
 import { DocumentCard, DocumentCardProps } from "./document-card";
 import { SlidersHorizontal, Plus, Grid, List, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import { useRouter } from "next/navigation";
 const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
   {
     id: "1",
@@ -63,6 +63,7 @@ export function Documents() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filteredDocs, setFilteredDocs] = useState(mockDocuments);
 
+  const router = useRouter();
   const handleSearch = (query: string) => {
     setSearchQuery(query);
 
@@ -93,7 +94,7 @@ export function Documents() {
         </div>
 
         <div className="mt-4 md:mt-0 flex items-center gap-2">
-          <Button>
+          <Button onClick={() => router.push("/documents/upload")}>
             <Plus className="w-4 h-4 mr-2" />
             Upload New
           </Button>
