@@ -41,7 +41,7 @@ export function DocumentSidebar({ user }: DocuSidebar) {
     {
       icon: <MessageSquare className="w-5 h-5" />,
       label: "Chat",
-      path: "/documents/c",
+      path: "/documents/chat",
     },
     {
       icon: <Settings className="w-5 h-5" />,

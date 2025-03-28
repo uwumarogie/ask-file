@@ -15,7 +15,6 @@ export async function fetchUserFiles(
     const userFiles = await db
       .select({
         file_id: files.file_id,
-        file_description: files.file_description,
       })
       .from(files)
       .where(eq(files.user_id, userId))
