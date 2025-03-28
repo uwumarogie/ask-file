@@ -1,37 +1,38 @@
-import { pgTable, varchar, text, timestamp, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  varchar,
+  text,
+  timestamp,
+  pgEnum,
+  boolean,
+} from "drizzle-orm/pg-core";
 
-export const users = pgTable(
+export const users = pgTable("users", {
+  user_id: varchar("user_id").primaryKey(),
+  username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const files = pgTable("files", {
+  file_id: varchar("file_id").primaryKey(),
+  user_id: varchar("user_id")
+    .references(() => users.user_id)
+    .notNull(),
+  file_name: text("file_name").notNull(),
+  file_path: text("file_path").notNull(),
+  isFavorite: boolean("isFavorite").notNull().default(false),
+  thumbnail_path: text("thumbnail_path"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const messageRole = pgEnum("message_role", [
+  "system",
   "user",
-  {
-    user_id: varchar("user_id").primaryKey(),
-    username: text("username").notNull().unique(),
-    email: text("email").notNull().unique(),
-    created_at: timestamp("created_at").notNull().defaultNow(),
-    updated_at: timestamp("updated_at").notNull().defaultNow(),
-  },
-  (table) => ({
-    userIdIndex: index("user_id_idx").on(table.user_id),
-  }),
-);
-
-export const files = pgTable(
-  "files",
-  {
-    file_id: varchar("file_id").primaryKey(),
-    user_id: varchar("user_id")
-      .references(() => users.user_id)
-      .notNull(),
-    file_name: text("file_name").notNull(),
-    file_path: text("file_path").notNull(),
-    file_description: text("file_description").notNull(),
-    created_at: timestamp("created_at").notNull().defaultNow(),
-    updated_at: timestamp("updated_at").notNull().defaultNow(),
-  },
-  (table) => ({
-    fileIDIndex: index("file_id_idx").on(table.file_id),
-  }),
-);
-
+  "assistant",
+]);
 export const message = pgTable("message", {
   message_id: varchar("message_id").primaryKey(),
   chat_id: varchar("chat_id")
@@ -40,9 +41,7 @@ export const message = pgTable("message", {
   user_id: varchar("user_id")
     .references(() => users.user_id)
     .notNull(),
-  file_id: varchar("file_id")
-    .references(() => files.file_id)
-    .notNull(),
+  message_role: messageRole(),
   content: varchar("content").notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),

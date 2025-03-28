@@ -25,12 +25,12 @@ export async function uploadFileToDatabase(file: File) {
     const fileId = uuidv4();
     const userId = user.id;
 
+    //TODO: Add thumbnail path
     await db.insert(files).values({
       file_id: fileId,
       user_id: userId,
       file_name: sanitizedFileName,
       file_path: awsFileKey,
-      file_description: sanitizedFileName,
     });
 
     return {

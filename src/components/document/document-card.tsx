@@ -1,30 +1,27 @@
 import React from "react";
 import { cn } from "@/util/cn";
-import { FileText, Clock, Tag, MoreVertical, Star } from "lucide-react";
+import { FileText, Clock, MoreVertical, Star } from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";
+import Link from "next/link";
 
-export interface DocumentCardProps {
+export type DocumentCardProps = {
   id: string;
   title: string;
   fileType: string;
-  tags?: string[];
   createdAt: Date;
   isFavorite?: boolean;
   thumbnailUrl?: string;
-  onClick?: () => void;
   className?: string;
-}
+};
 
 export function DocumentCard({
   id,
   title,
   fileType,
-  tags = [],
   createdAt,
   isFavorite = false,
   thumbnailUrl,
-  onClick,
   className,
 }: DocumentCardProps) {
   const getFileIcon = () => {
@@ -42,14 +39,13 @@ export function DocumentCard({
   };
 
   return (
-    <div
+    <Link
       className={cn(
         "group relative flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:shadow-card transition-all duration-300",
         "hover:border-primary/20 hover:-translate-y-1",
         className,
       )}
-      id={id}
-      onClick={onClick}
+      href={`/documents/chat/${id}`}
     >
       <div className="absolute top-2 right-2 z-10 flex space-x-1">
         {isFavorite && (
@@ -85,30 +81,7 @@ export function DocumentCard({
           <Clock className="w-3 h-3" />
           <span>{format(createdAt, "MMM d, yyyy")}</span>
         </div>
-
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {tags.slice(0, 2).map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center text-xs px-2 py-0.5 rounded-full bg-secondary
-                text-secondary-foreground"
-              >
-                <Tag className="w-3 h-3 mr-1" />
-                {tag}
-              </span>
-            ))}
-            {tags.length > 2 && (
-              <span
-                className="inline-flex items-center text-xs px-2 py-0.5 rounded-full bg-secondary
-              text-secondary-foreground"
-              >
-                +{tags.length - 2}
-              </span>
-            )}
-          </div>
-        )}
       </div>
-    </div>
+    </Link>
   );
 }

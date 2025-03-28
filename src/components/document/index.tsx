@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { SearchBar } from "@/components/search-bar";
+import { SearchBar } from "@/components/document/search-bar";
 import { DocumentCard, DocumentCardProps } from "./document-card";
 import { SlidersHorizontal, Plus, Grid, List, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,49 +10,23 @@ const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
   {
     id: "1",
     title: "Technical Specification v1.0",
-    fileType: "pdf",
-    tags: ["specification", "v1.0"],
+    fileType: "PDF",
     createdAt: new Date("2023-10-15"),
     isFavorite: true,
   },
+
   {
     id: "2",
-    title: "API Documentation",
-    fileType: "md",
-    tags: ["api", "reference"],
-    createdAt: new Date("2023-11-02"),
-    isFavorite: false,
-  },
-  {
-    id: "3",
-    title: "User Manual Draft",
-    fileType: "docx",
-    tags: ["manual", "draft"],
-    createdAt: new Date("2023-09-28"),
-    isFavorite: false,
-  },
-  {
-    id: "4",
     title: "System Architecture Overview",
-    fileType: "pdf",
-    tags: ["architecture", "system"],
+    fileType: "PDF",
     createdAt: new Date("2023-10-05"),
     isFavorite: true,
   },
   {
-    id: "5",
+    id: "3",
     title: "Project Requirements Document",
-    fileType: "pdf",
-    tags: ["requirements", "project"],
+    fileType: "PDF",
     createdAt: new Date("2023-08-20"),
-    isFavorite: false,
-  },
-  {
-    id: "6",
-    title: "Code Standards Guide",
-    fileType: "md",
-    tags: ["code", "standards"],
-    createdAt: new Date("2023-09-10"),
     isFavorite: false,
   },
 ];
@@ -72,12 +46,8 @@ export function Documents() {
       return;
     }
 
-    const filtered = mockDocuments.filter(
-      (doc) =>
-        doc.title.toLowerCase().includes(query.toLowerCase()) ||
-        doc.tags?.some((tag) =>
-          tag.toLowerCase().includes(query.toLowerCase()),
-        ),
+    const filtered = mockDocuments.filter((doc) =>
+      doc.title.toLowerCase().includes(query.toLowerCase()),
     );
 
     setFilteredDocs(filtered);
@@ -145,7 +115,11 @@ export function Documents() {
             We couldn&apos;t find any documents matching your search criteria.
             Try adjusting your filters or upload new documents.
           </p>
-          <Button className="mt-4" variant="outline">
+          <Button
+            className="mt-4"
+            variant="outline"
+            onClick={() => router.push("/documents/upload")}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Upload Document
           </Button>
@@ -153,12 +127,7 @@ export function Documents() {
       ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredDocs.map((doc) => (
-            <DocumentCard
-              key={doc.id}
-              {...doc}
-              onClick={() => console.log(`Clicked document ${doc.id}`)}
-              className="h-full"
-            />
+            <DocumentCard key={doc.id} {...doc} className="h-full" />
           ))}
         </div>
       ) : (
@@ -167,24 +136,17 @@ export function Documents() {
             <div
               key={doc.id}
               className="flex items-center border rounded-lg p-3 gap-4 hover:border-primary/20 hover:bg-accent/10 transition-colors cursor-pointer"
-              onClick={() => console.log(`Clicked document ${doc.id}`)}
+              onClick={() =>
+                console.log(`Clicked document ${(doc.id, doc.fileType)}`)
+              }
             >
               <div className="w-10 h-10 flex-shrink-0 bg-secondary rounded-md flex items-center justify-center">
-                {doc.fileType === "pdf" ? (
+                {doc.fileType === "PDF" && (
                   <div className="w-6 h-6 text-red-500">
                     <FileText className="w-full h-full" />
                   </div>
-                ) : doc.fileType === "md" ? (
-                  <div className="w-6 h-6 text-green-500">
-                    <FileText className="w-full h-full" />
-                  </div>
-                ) : (
-                  <div className="w-6 h-6 text-blue-500">
-                    <FileText className="w-full h-full" />
-                  </div>
-                )}
+                )}{" "}
               </div>
-
               <div className="min-w-0 flex-1">
                 <h3 className="font-medium truncate">{doc.title}</h3>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -192,17 +154,6 @@ export function Documents() {
                   <span>•</span>
                   <span className="capitalize">{doc.fileType}</span>
                 </div>
-              </div>
-
-              <div className="flex flex-wrap gap-1 justify-end">
-                {doc.tags?.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"
-                  >
-                    {tag}
-                  </span>
-                ))}
               </div>
             </div>
           ))}
