@@ -59,7 +59,7 @@ const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
 
 export function Documents() {
   const [searchQuery, setSearchQuery] = useState("");
-  console.log(searchQuery);
+  console.log("searchQuery", searchQuery);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filteredDocs, setFilteredDocs] = useState(mockDocuments);
 

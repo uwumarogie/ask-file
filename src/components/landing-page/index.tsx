@@ -102,7 +102,7 @@ export function Index() {
           </p>
 
           <div className="max-w-2xl mx-auto glass rounded-2xl p-8 shadow-elevated">
-            <FileUploadZone onFilesUploaded={handleFilesUploaded} />
+            <FileUploadZone onFileUploaded={handleFilesUploaded} />
           </div>
 
           {isUploading && (

@@ -5,7 +5,7 @@ import { useToast } from "@/util/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-interface FileUploadZoneProps {
+type FileUploadZoneProps =  {
   onFileUploaded?: (file: File | null) => void;
   accept?: string;
   maxSize?: number;
@@ -29,7 +29,7 @@ export function FileUploadZone({
     setIsDragging(false);
   }, []);
 
-  const validateFile = (file: File): boolean => {
+  const validateFile = useCallback((file: File)=> {
     // Check file size (convert maxSize from MB to bytes)
     if (file.size > maxSize * 1024 * 1024) {
       toast({
@@ -58,9 +58,9 @@ export function FileUploadZone({
     }
 
     return true;
-  };
+  }, [accept, maxSize, toast]);
 
-  const processFile = (fileList: FileList) => {
+  const processFile = useCallback((fileList: FileList) => {
     if (fileList.length === 0) return;
 
     // Only take the first file as we're in single file mode
@@ -78,7 +78,7 @@ export function FileUploadZone({
         description: `${selectedFile.name} successfully uploaded`,
       });
     }
-  };
+  }, [onFileUploaded, toast, validateFile]);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -87,7 +87,7 @@ export function FileUploadZone({
     if (e.dataTransfer.files.length > 0) {
       processFile(e.dataTransfer.files);
     }
-  }, []);
+  }, [processFile]);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {

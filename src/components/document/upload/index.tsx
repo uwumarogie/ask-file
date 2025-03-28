@@ -33,11 +33,7 @@ export function DocumentUpload() {
           </p>
 
           <div className="mt-6">
-            <FileUploadZone
-              accept=".pdf,.md,.txt,.doc,.docx"
-              multiple={true}
-              maxSize={20}
-            />
+            <FileUploadZone accept=".pdf" maxSize={20} />
           </div>
           <div className="mt-8 bg-muted/40 rounded-lg p-4">
             <h3 className="text-sm font-medium mb-2">Supported file types:</h3>
