@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/util/cn";
-import { FileText, Clock, Tag, MoreVertical, Star } from "lucide-react";
+import { FileText, Clock, MoreVertical, Star } from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +13,7 @@ export type DocumentCardProps = {
   isFavorite?: boolean;
   thumbnailUrl?: string;
   className?: string;
-}
+};
 
 export function DocumentCard({
   id,

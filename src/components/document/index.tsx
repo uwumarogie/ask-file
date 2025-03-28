@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { SearchBar } from "@/components/search-bar";
+import { SearchBar } from "@/components/document/search-bar";
 import { DocumentCard, DocumentCardProps } from "./document-card";
 import { SlidersHorizontal, Plus, Grid, List, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";

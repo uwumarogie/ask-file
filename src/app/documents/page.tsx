@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Documents } from "@/components/document";
 import { syncUser } from "@/actions/sync-user";
