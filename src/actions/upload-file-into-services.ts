@@ -30,6 +30,7 @@ export async function uploadFileToDatabase(file: File) {
       user_id: userId,
       file_name: sanitizedFileName,
       file_path: awsFileKey,
+      file_description: sanitizedFileName,
     });
 
     return {

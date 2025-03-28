@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "100mb",
     },
   },
+  images: {
+    domains: ["img.clerk.com"],
+  },
 };
 
 export default nextConfig;

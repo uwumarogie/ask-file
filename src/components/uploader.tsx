@@ -84,7 +84,7 @@ export function Uploader({ userId }: { userId: string | undefined }) {
       <div
         {...getRootProps()}
         className={clsx(
-          "flex flex-col items-center justify-center border-4 border-dashed lg:p-56 p-52" +
+          "flex flex-col items-center justify-center transition-all ease-out duration-700 border-2 border-black lg:p-56 p-52" +
             "cursor-pointer rounded-2xl transition-colors duration-200",
           {
             "border-green-400": isDragActive,
@@ -102,35 +102,31 @@ export function Uploader({ userId }: { userId: string | undefined }) {
           accept=".pdf"
           className="hidden"
         />
-        <Image
-          src="/icons/upload-file-icon.svg"
-          alt="Upload file icon"
-          width={70}
-          height={70}
-        />
-        <label htmlFor="file" className=" space-x-10 font-bold">
-          <p className="font-bold">
-            {isDragActive ? (
-              "Drop the file here..."
-            ) : (
-              <span className="text-white">
-                Drag and Drop file here or{" "}
-                <span className="underline text-blue-500">Choose file</span>
-              </span>
-            )}
-          </p>
-          {isDragReject && (
-            <p className="text-red-500 mt-2">Unsupported file type or size.</p>
-          )}
-        </label>
-      </div>
 
-      {!file && (
-        <div className="flex flex-row justify-between text-white">
-          <span>Supported format: PDF</span>
-          <span>Max file size: 25MB</span>
+        <div className="flex flex-col space-y-8 items-center justify-center">
+          <Image
+            src="/icons/upload-file-icon.svg"
+            alt="Upload file icon"
+            width={70}
+            height={70}
+          />
+          <label
+            htmlFor="file"
+            className="flex flex-col space-y-4 items-center justify-center"
+          >
+            <p className="font-bold">Upload your Document</p>
+            <p className="font-thin text-black text-center">
+              Drag and drop your text document, PDF, or Markdown file, or click
+              to browse your files.
+            </p>
+            {isDragReject && (
+              <p className="text-red-500 mt-2">
+                Unsupported file type or size.
+              </p>
+            )}
+          </label>
         </div>
-      )}
+      </div>
     </div>
   );
 }
