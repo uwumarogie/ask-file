@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, FileUp, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/util/cn";
+import { cn } from "@/util/tailwind/cn";
 import { SearchBar } from "@/components/document/search-bar";
 
 const initialMessages = [

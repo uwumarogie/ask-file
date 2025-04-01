@@ -1,18 +1,16 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import React from "react";
-
+import { useUser } from "@clerk/nextjs";
 export function LandingPageNavbar() {
   const router = useRouter();
+  const { isSignedIn } = useUser();
+  console.debug("isSignedIn", isSignedIn);
+
   const navItems = [
-    {
-      slug: "#features",
-      text: "Features",
-    },
     {
       slug: "/docs",
       text: "Documentation",
@@ -41,10 +39,17 @@ export function LandingPageNavbar() {
             </Link>
           ))}
         </nav>
-        <Button variant="outline" onClick={() => router.push("/documents")}>
-          Dashboard
-          <ArrowRight className="ml-2 w-4 h-4" />
-        </Button>
+        {isSignedIn ? (
+          <Button variant="outline" onClick={() => router.push("/documents")}>
+            Dashboard
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        ) : (
+          <Button variant="outline" onClick={() => router.push("/login")}>
+            Login
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        )}
       </div>
     </header>
   );

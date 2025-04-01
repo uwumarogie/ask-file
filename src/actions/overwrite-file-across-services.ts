@@ -2,7 +2,7 @@
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { AWSService } from "@/util/aws/aws-service";
 import { deleteFileFromDatabase } from "@/actions/delete-file-from-postgres";
-import { uploadFileToDatabase } from "@/actions/upload-file-into-services";
+import { uploadFileToDatabaseAndS3 } from "@/actions/upload-file-into-services";
 import { deleteEmbeddingFromPinecone } from "@/database/vector/pinecone-service";
 import { uploadFileEmbeddingToPinecone } from "@/actions/upload-file-into-services";
 
@@ -19,7 +19,7 @@ export async function overwriteFileAcrossServices(file: File, userId: string) {
       sanitizedFileName,
       userId,
     );
-    const fileResponse = await uploadFileToDatabase(file);
+    const fileResponse = await uploadFileToDatabaseAndS3(file);
 
     if (!fileResponse.fileId) {
       throw new Error("Failed to upload file to the database");

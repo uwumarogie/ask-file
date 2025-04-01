@@ -6,6 +6,7 @@ import {
   pgEnum,
   boolean,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   user_id: varchar("user_id").primaryKey(),
@@ -33,8 +34,12 @@ export const messageRole = pgEnum("message_role", [
   "user",
   "assistant",
 ]);
+
 export const message = pgTable("message", {
-  message_id: varchar("message_id").primaryKey(),
+  message_id: varchar("message_id")
+    .primaryKey()
+    .notNull()
+    .default(crypto.randomUUID()),
   chat_id: varchar("chat_id")
     .references(() => chat.chat_id)
     .notNull(),
@@ -59,3 +64,7 @@ export const chat = pgTable("chat", {
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const chatRelations = relations(chat, ({ many }) => ({
+  message: many(message),
+}));

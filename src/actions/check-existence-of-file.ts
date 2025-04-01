@@ -14,13 +14,11 @@ export async function checkExistingFileName(
     if (!user) {
       throw new Error("User not authenticated");
     }
-    console.debug("fileName in the server", fileName);
     const checkExistingFile = await db
       .select()
       .from(files)
       .where(and(eq(files.file_name, fileName), eq(files.user_id, user.id)));
 
-    console.debug("checkExistingFile in the server", checkExistingFile);
     return { success: true, response: checkExistingFile.length > 0 };
   } catch (error) {
     console.error("Error checking file name:", error);
