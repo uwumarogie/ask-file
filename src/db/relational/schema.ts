@@ -10,7 +10,7 @@ import {
 import { relations } from "drizzle-orm";
 import * as z from "zod";
 
-export const userTable = pgTable("user", {
+export const userTable = pgTable("users", {
   user_id: uuid("user_id").defaultRandom().primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
@@ -48,7 +48,7 @@ export const messageTable = pgTable("message", {
   user_id: uuid("user_id")
     .references(() => userTable.user_id, { onDelete: "cascade" })
     .notNull(),
-  message_role: messageRoleEnum("message_role").notNull(),
+  message_role: messageRoleEnum(),
   content: varchar("content").notNull(),
   created_at: timestamp("created_at", { mode: "date", withTimezone: true })
     .defaultNow()
@@ -56,8 +56,8 @@ export const messageTable = pgTable("message", {
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const conversationTable = pgTable("chat", {
-  chat_id: uuid("chat_id").defaultRandom().primaryKey(),
+export const conversationTable = pgTable("conversation", {
+  chat_id: uuid("conversation_id").defaultRandom().primaryKey(),
   user_id: uuid("user_id")
     .references(() => userTable.user_id, { onDelete: "cascade" })
     .notNull(),
@@ -65,10 +65,15 @@ export const conversationTable = pgTable("chat", {
     .references(() => filesTable.file_id)
     .notNull(),
   title: varchar("title").notNull(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
+  created_at: timestamp("created_at", { mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const chatRelations = relations(conversationTable, ({ many }) => ({
-  message: many(messageTable),
-}));
+export const conversationRelations = relations(
+  conversationTable,
+  ({ many }) => ({
+    message: many(messageTable),
+  }),
+);

@@ -114,6 +114,7 @@ export function Index() {
             </div>
           )}
         </section>
+        <SignOutButton />
         <section id="features" className="py-20 bg-secondary/50">
           <div className="container max-w-6xl mx-auto">
             <h2 className="text-3xl font-medium text-center mb-12">

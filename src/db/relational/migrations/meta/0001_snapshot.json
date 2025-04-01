@@ -1,6 +1,6 @@
 {
-  "id": "67694804-78a2-44ea-a0ef-348461623075",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "1070115a-625e-4c77-a415-6dfc2bab3ba5",
+  "prevId": "67694804-78a2-44ea-a0ef-348461623075",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -50,10 +50,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "conversation_user_id_user_user_id_fk": {
-          "name": "conversation_user_id_user_user_id_fk",
+        "conversation_user_id_users_user_id_fk": {
+          "name": "conversation_user_id_users_user_id_fk",
           "tableFrom": "conversation",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -142,10 +142,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "file_user_id_user_user_id_fk": {
-          "name": "file_user_id_user_user_id_fk",
+        "file_user_id_users_user_id_fk": {
+          "name": "file_user_id_users_user_id_fk",
           "tableFrom": "file",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -228,10 +228,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "message_user_id_user_user_id_fk": {
-          "name": "message_user_id_user_user_id_fk",
+        "message_user_id_users_user_id_fk": {
+          "name": "message_user_id_users_user_id_fk",
           "tableFrom": "message",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -248,8 +248,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user": {
-      "name": "user",
+    "public.users": {
+      "name": "users",
       "schema": "",
       "columns": {
         "user_id": {
@@ -283,15 +283,15 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "user_username_unique": {
-          "name": "user_username_unique",
+        "users_username_unique": {
+          "name": "users_username_unique",
           "nullsNotDistinct": false,
           "columns": [
             "username"
           ]
         },
-        "user_email_unique": {
-          "name": "user_email_unique",
+        "users_email_unique": {
+          "name": "users_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"

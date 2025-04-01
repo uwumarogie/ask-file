@@ -53,7 +53,6 @@ export function Documents() {
     checkUser();
   }, [email, userId, username]);
 
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
 
