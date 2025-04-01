@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { cn } from "@/util/cn";
+import { cn } from "@/util/tailwind/cn";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
@@ -54,15 +54,15 @@ export function DocumentSidebar({ user }: DocuSidebar) {
     <div
       className={cn(
         "h-screen fixed left-0 top-0 z-40 flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ease-in-out",
-        collapsed ? "w-16" : "w-64",
+        collapsed ? "w-16" : "w-52",
       )}
     >
       <div className="flex items-center p-4 h-16 border-b border-sidebar-border">
         {!collapsed && (
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <FolderOpen className="w-6 h-6 text-primary" />
             <span className="font-semibold text-lg">DocuMind</span>
-          </div>
+          </Link>
         )}
         {collapsed && <FolderOpen className="w-6 h-6 text-primary mx-auto" />}
         <button
@@ -116,9 +116,6 @@ export function DocumentSidebar({ user }: DocuSidebar) {
           {!collapsed && (
             <div className="flex flex-col">
               <span className="text-sm font-medium">{user.name}</span>
-              <span className="text-xs text-asidebar-foreground/60">
-                {user.email}
-              </span>
             </div>
           )}
         </div>

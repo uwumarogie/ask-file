@@ -12,15 +12,18 @@ import { getChunkedTextFromFile } from "@/database/vector/util/chunk-text";
 
 export type Category = "Technical Document" | "News Article";
 
-export async function uploadFileToDatabase(file: File) {
+export async function uploadFileToDatabaseAndS3(file: File) {
   try {
     const user = await currentUser();
     if (!user) {
       throw new Error("User not authenticated");
     }
 
-    const awsService = new AWSService(user.id);
-    const awsFileKey = await awsService.uploadFileToS3(file);
+    const response = await uploadFileToS3(user.id, file);
+    if (!response.success) {
+      throw new Error(response.message);
+    }
+    const awsFileKey = response.fileKey;
     const sanitizedFileName = sanitizeFileName(file.name);
     const fileId = uuidv4();
     const userId = user.id;
@@ -30,14 +33,15 @@ export async function uploadFileToDatabase(file: File) {
       file_id: fileId,
       user_id: userId,
       file_name: sanitizedFileName,
-      file_path: awsFileKey,
+      file_path: awsFileKey!,
     });
 
     return {
       success: true,
       userId,
       fileId,
-      awsFileKey,
+      fileName: sanitizedFileName,
+      awsFileKey: awsFileKey!,
       filePath: fileId,
     };
   } catch (error) {
@@ -46,9 +50,20 @@ export async function uploadFileToDatabase(file: File) {
   }
 }
 
+async function uploadFileToS3(userId: string, file: File) {
+  const awsService = new AWSService(userId);
+  try {
+    const awsFileKey = await awsService.uploadFileToS3(file);
+    return { success: true, fileKey: awsFileKey };
+  } catch (error) {
+    console.error("Error uploading file to S3", error);
+    return { success: false, message: (error as Error).message };
+  }
+}
+
 export async function uploadFileAcrossServices(file: File) {
   try {
-    const uploadResult = await uploadFileToDatabase(file);
+    const uploadResult = await uploadFileToDatabaseAndS3(file);
     if (!uploadResult.success) {
       throw new Error("Failed to upload file to the database");
     }
@@ -59,7 +74,14 @@ export async function uploadFileAcrossServices(file: File) {
       uploadResult.awsFileKey!,
     );
 
-    return { success: true, filePath: uploadResult.fileId! };
+    return {
+      success: true,
+      fileData: {
+        userId: uploadResult.userId!,
+        fileId: uploadResult.fileId!,
+        title: uploadResult.fileName,
+      },
+    };
   } catch (error) {
     console.error("Error uploading file across services", error);
     return { success: false, error: (error as Error).message };
@@ -74,6 +96,7 @@ export async function uploadFileEmbeddingToPinecone(
 ) {
   try {
     const chunks = await getChunkedTextFromFile(file, fileKey);
+    console.debug("Chunks", chunks);
     const embeddings = await generateEmbedding(chunks);
     const response = await upsertEmbedding(chunks, embeddings, fileId, userId);
     return response;

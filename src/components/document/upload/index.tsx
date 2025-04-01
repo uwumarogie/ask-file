@@ -5,10 +5,60 @@ import { Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { Badge } from "@/components/ui/badge";
+import { uploadFileAcrossServices } from "@/actions/upload-file-into-services";
+import { initializeChatEntry } from "@/actions/initialize-chat-entry";
+import { checkFileInDatabase } from "@/actions/check-file-in-database";
+
+async function handleUpload(
+  file: File | null,
+  toast?: Function,
+): Promise<string | undefined> {
+  if (!file) {
+    throw new Error("File does not exist");
+  }
+  try {
+    const fileResponse = await checkFileInDatabase(file.name);
+
+    console.log(fileResponse);
+    if (fileResponse.exist && toast) {
+      console.log("Inside the toast");
+      toast({
+        title: "File already exist",
+        description: `Delete the current file ${file.name} in teh application or rename your uploaded file`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const response = await uploadFileAcrossServices(file);
+    if (!response.success) {
+      throw new Error("Failed to upload file");
+    }
+
+    const fileData = response.fileData;
+    if (!fileData) {
+      throw new Error("Missing file data in the upload response");
+    }
+
+    const { userId, fileId, title } = fileData;
+    if (!title) {
+      throw new Error("Missing title in file data");
+    }
+
+    const chatResponse = await initializeChatEntry(fileId, title, userId);
+    if (!chatResponse.success) {
+      throw new Error("Failed to initialize chat entry");
+    }
+
+    return chatResponse.chatId;
+  } catch (error) {
+    console.error("Error uploading file", error);
+  }
+}
 
 export function DocumentUpload() {
   return (
-    <div className="container mx-auto px-4 py-6 max-w-5xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-semibold">Upload Documents</h1>
@@ -17,7 +67,6 @@ export function DocumentUpload() {
           <Upload className="mr-1 h-3 w-3" /> Upload Zone
         </Badge>
       </div>
-
       <Card className="mb-8 border-none shadow-md bg-card">
         <CardHeader className="pb-2">
           <CardTitle className="text-xl flex items-center gap-2">
@@ -33,7 +82,7 @@ export function DocumentUpload() {
           </p>
 
           <div className="mt-6">
-            <FileUploadZone accept=".pdf" maxSize={20} />
+            <FileUploadZone onFileUploaded={handleUpload} />
           </div>
           <div className="mt-8 bg-muted/40 rounded-lg p-4">
             <h3 className="text-sm font-medium mb-2">Supported file types:</h3>
