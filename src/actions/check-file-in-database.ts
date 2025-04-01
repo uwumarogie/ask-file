@@ -1,7 +1,7 @@
 "use server";
 
-import db from "@/database/relational/connection";
-import { files } from "@/database/relational/schema";
+import db from "@/db/relational/connection";
+import { filesTable } from "@/db/relational/schema";
 import { eq, and } from "drizzle-orm";
 import { currentUser } from "@clerk/nextjs/server";
 import { sanitizeFileName } from "@/util/file-modification/util";
@@ -15,9 +15,12 @@ export async function checkFileInDatabase(fileName: string) {
     const sanitizedFileName = sanitizeFileName(fileName);
     const result = await db
       .select()
-      .from(files)
+      .from(filesTable)
       .where(
-        and(eq(files.file_name, sanitizedFileName), eq(files.user_id, user.id)),
+        and(
+          eq(filesTable.file_name, sanitizedFileName),
+          eq(filesTable.user_id, user.id),
+        ),
       );
     if (result.length > 0) {
       return { exist: true, fileId: result[0].file_id };

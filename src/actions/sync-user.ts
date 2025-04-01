@@ -1,7 +1,7 @@
 "use server";
 import * as z from "zod";
-import { users } from "@/database/relational/schema";
-import db from "@/database/relational/connection";
+import { userTable } from "@/db/relational/schema";
+import db from "@/db/relational/connection";
 import { eq } from "drizzle-orm";
 
 const userSchema = z.object({
@@ -22,19 +22,19 @@ export async function syncUser(
 
     const existingUser = await db
       .select()
-      .from(users)
-      .where(eq(users.user_id, userData.userId));
+      .from(userTable)
+      .where(eq(userTable.user_id, userData.userId));
 
     if (existingUser.length > 0) {
       return { success: false, response: "User already exists" };
     } else {
       await db
-        .update(users)
+        .update(userTable)
         .set({
           username: userData.username!,
           email: userData.email,
         })
-        .where(eq(users.user_id, userData.userId));
+        .where(eq(userTable.user_id, userData.userId));
       return { success: true, response: userData.userId };
     }
   } catch (error) {
