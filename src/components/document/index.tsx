@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { syncUser } from "@/actions/sync-user";
 import { useUser } from "@clerk/nextjs";
-import {v4 as uuidv4} from "uuid";
+import { v4 as uuidv4 } from "uuid";
 const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
   {
     id: "1",
@@ -48,8 +48,8 @@ export function Documents() {
 
   React.useEffect(() => {
     async function checkUser() {
-      if ( username && email && user) {
-	      const userId = uuidv4(); 
+      if (username && email && user) {
+        const userId = uuidv4();
         await syncUser(userId, username, email);
       }
     }
@@ -72,7 +72,7 @@ export function Documents() {
   };
 
   return (
-    <div className="container mx-auto py-8 max-w-7xl">
+    <div className="container mx-auto py-8 max-w-6xl">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-medium">Documents</h1>
