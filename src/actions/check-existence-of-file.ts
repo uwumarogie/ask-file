@@ -1,8 +1,8 @@
 "use server";
 
-import db from "@/database/relational/connection";
+import db from "@/db/relational/connection";
 import { eq, and } from "drizzle-orm";
-import { files } from "@/database/relational/schema";
+import { filesTable } from "@/db/relational/schema";
 
 import { currentUser } from "@clerk/nextjs/server";
 export async function checkExistingFileName(
@@ -16,8 +16,13 @@ export async function checkExistingFileName(
     }
     const checkExistingFile = await db
       .select()
-      .from(files)
-      .where(and(eq(files.file_name, fileName), eq(files.user_id, user.id)));
+      .from(filesTable)
+      .where(
+        and(
+          eq(filesTable.file_name, fileName),
+          eq(filesTable.user_id, user.id),
+        ),
+      );
 
     return { success: true, response: checkExistingFile.length > 0 };
   } catch (error) {

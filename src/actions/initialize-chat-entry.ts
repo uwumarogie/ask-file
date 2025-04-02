@@ -1,6 +1,6 @@
 "use server";
-import db from "@/database/relational/connection";
-import { chat, message } from "@/database/relational/schema";
+import db from "@/db/relational/connection";
+import { conversationTable, messageTable } from "@/db/relational/schema";
 import { v4 as uuidv4 } from "uuid";
 export async function initializeChatEntry(
   fileId: string,
@@ -14,13 +14,13 @@ export async function initializeChatEntry(
       "How can I help your with your technical documents today?";
 
     const test = await db.transaction(async (tx) => {
-      await tx.insert(chat).values({
+      await tx.insert(conversationTable).values({
         chat_id: chatId,
         user_id: userId,
         file_id: fileId,
         title: title,
       });
-      await tx.insert(message).values({
+      await tx.insert(messageTable).values({
         message_id: messageId,
         chat_id: chatId,
         user_id: userId,

@@ -3,7 +3,7 @@ import { sanitizeFileName } from "@/util/file-modification/util";
 import { AWSService } from "@/util/aws/aws-service";
 import { deleteFileFromDatabase } from "@/actions/delete-file-from-postgres";
 import { uploadFileToDatabaseAndS3 } from "@/actions/upload-file-into-services";
-import { deleteEmbeddingFromPinecone } from "@/database/vector/pinecone-service";
+import { deleteEmbeddingFromPinecone } from "@/db/vector/pinecone-service";
 import { uploadFileEmbeddingToPinecone } from "@/actions/upload-file-into-services";
 
 export async function overwriteFileAcrossServices(file: File, userId: string) {

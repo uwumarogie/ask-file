@@ -1,28 +1,29 @@
 {
-  "id": "c4f5ab3c-5b30-4f89-9a0c-46bbc0a352ca",
-  "prevId": "a97abbe1-e19a-480a-a82b-2c9b412b4047",
+  "id": "16424d39-5cd5-40bf-91d1-8bedc8bdac34",
+  "prevId": "205cf762-6eba-4f31-8e63-6b23311ca296",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.chat": {
-      "name": "chat",
+    "public.conversation": {
+      "name": "conversation",
       "schema": "",
       "columns": {
-        "chat_id": {
-          "name": "chat_id",
-          "type": "varchar",
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "file_id": {
           "name": "file_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -34,7 +35,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -49,23 +50,23 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "chat_user_id_user_user_id_fk": {
-          "name": "chat_user_id_user_user_id_fk",
-          "tableFrom": "chat",
-          "tableTo": "user",
+        "conversation_user_id_users_user_id_fk": {
+          "name": "conversation_user_id_users_user_id_fk",
+          "tableFrom": "conversation",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "chat_file_id_files_file_id_fk": {
-          "name": "chat_file_id_files_file_id_fk",
-          "tableFrom": "chat",
-          "tableTo": "files",
+        "conversation_file_id_file_file_id_fk": {
+          "name": "conversation_file_id_file_file_id_fk",
+          "tableFrom": "conversation",
+          "tableTo": "file",
           "columnsFrom": [
             "file_id"
           ],
@@ -82,19 +83,20 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.files": {
-      "name": "files",
+    "public.file": {
+      "name": "file",
       "schema": "",
       "columns": {
         "file_id": {
           "name": "file_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -110,15 +112,22 @@
           "primaryKey": false,
           "notNull": true
         },
-        "file_description": {
-          "name": "file_description",
+        "isFavorite": {
+          "name": "isFavorite",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "thumbnail_path": {
+          "name": "thumbnail_path",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -133,17 +142,17 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "files_user_id_user_user_id_fk": {
-          "name": "files_user_id_user_user_id_fk",
-          "tableFrom": "files",
-          "tableTo": "user",
+        "file_user_id_users_user_id_fk": {
+          "name": "file_user_id_users_user_id_fk",
+          "tableFrom": "file",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -159,27 +168,29 @@
       "columns": {
         "message_id": {
           "name": "message_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "chat_id": {
           "name": "chat_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "file_id": {
-          "name": "file_id",
-          "type": "varchar",
+        "message_role": {
+          "name": "message_role",
+          "type": "message_role",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "content": {
           "name": "content",
@@ -189,7 +200,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -204,43 +215,30 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "message_chat_id_chat_chat_id_fk": {
-          "name": "message_chat_id_chat_chat_id_fk",
+        "message_chat_id_conversation_conversation_id_fk": {
+          "name": "message_chat_id_conversation_conversation_id_fk",
           "tableFrom": "message",
-          "tableTo": "chat",
+          "tableTo": "conversation",
           "columnsFrom": [
             "chat_id"
           ],
           "columnsTo": [
-            "chat_id"
+            "conversation_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "message_user_id_user_user_id_fk": {
-          "name": "message_user_id_user_user_id_fk",
+        "message_user_id_users_user_id_fk": {
+          "name": "message_user_id_users_user_id_fk",
           "tableFrom": "message",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "message_file_id_files_file_id_fk": {
-          "name": "message_file_id_files_file_id_fk",
-          "tableFrom": "message",
-          "tableTo": "files",
-          "columnsFrom": [
-            "file_id"
-          ],
-          "columnsTo": [
-            "file_id"
-          ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -250,8 +248,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user": {
-      "name": "user",
+    "public.users": {
+      "name": "users",
       "schema": "",
       "columns": {
         "user_id": {
@@ -274,14 +272,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -291,15 +282,15 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "user_username_unique": {
-          "name": "user_username_unique",
+        "users_username_unique": {
+          "name": "users_username_unique",
           "nullsNotDistinct": false,
           "columns": [
             "username"
           ]
         },
-        "user_email_unique": {
-          "name": "user_email_unique",
+        "users_email_unique": {
+          "name": "users_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"
@@ -311,7 +302,17 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.message_role": {
+      "name": "message_role",
+      "schema": "public",
+      "values": [
+        "system",
+        "user",
+        "assistant"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

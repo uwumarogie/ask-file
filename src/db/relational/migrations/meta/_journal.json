@@ -1,0 +1,69 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1743523066864,
+      "tag": "0000_young_vargas",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1743524628186,
+      "tag": "0001_solid_red_shift",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743525005220,
+      "tag": "0002_strange_lifeguard",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1743599279054,
+      "tag": "0003_parallel_echo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1743599413246,
+      "tag": "0004_amazing_supreme_intelligence",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1743599551032,
+      "tag": "0005_slim_red_ghost",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1743599591729,
+      "tag": "0006_oval_hitman",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1743599717334,
+      "tag": "0007_right_molten_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1743599813259,
+      "tag": "0008_lethal_scourge",
+      "breakpoints": true
+    }
+  ]
+}

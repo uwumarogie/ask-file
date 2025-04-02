@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { queryPinecone } from "@/database/vector/pinecone-service";
+import { queryPinecone } from "@/db/vector/pinecone-service";
 import { useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 

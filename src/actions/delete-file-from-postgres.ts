@@ -1,6 +1,6 @@
 "use server";
-import db from "@/database/relational/connection";
-import { files } from "@/database/relational/schema";
+import db from "@/db/relational/connection";
+import { filesTable } from "@/db/relational/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function deleteFileFromDatabase(
@@ -10,9 +10,12 @@ export async function deleteFileFromDatabase(
   try {
     const existingFiles = await db
       .select()
-      .from(files)
+      .from(filesTable)
       .where(
-        and(eq(files.file_name, sanitizedFileName), eq(files.user_id, userId)),
+        and(
+          eq(filesTable.file_name, sanitizedFileName),
+          eq(filesTable.user_id, userId),
+        ),
       );
 
     if (existingFiles.length === 0) {
@@ -20,9 +23,12 @@ export async function deleteFileFromDatabase(
     }
 
     await db
-      .delete(files)
+      .delete(filesTable)
       .where(
-        and(eq(files.file_name, sanitizedFileName), eq(files.user_id, userId)),
+        and(
+          eq(filesTable.file_name, sanitizedFileName),
+          eq(filesTable.user_id, userId),
+        ),
       );
 
     console.debug("existingFiles", existingFiles);

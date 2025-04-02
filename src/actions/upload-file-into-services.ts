@@ -1,14 +1,14 @@
 "use server";
 
-import db from "@/database/relational/connection";
-import { files } from "@/database/relational/schema";
+import db from "@/db/relational/connection";
+import { filesTable } from "@/db/relational/schema";
 import { AWSService } from "@/util/aws/aws-service";
 import { generateEmbedding } from "@/util/openai-service/embedding-service";
-import { upsertEmbedding } from "@/database/vector/pinecone-service";
+import { upsertEmbedding } from "@/db/vector/pinecone-service";
 import { currentUser } from "@clerk/nextjs/server";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { v4 as uuidv4 } from "uuid";
-import { getChunkedTextFromFile } from "@/database/vector/util/chunk-text";
+import { getChunkedTextFromFile } from "@/db/vector/util/chunk-text";
 
 export type Category = "Technical Document" | "News Article";
 
@@ -29,7 +29,7 @@ export async function uploadFileToDatabaseAndS3(file: File) {
     const userId = user.id;
 
     //TODO: Add thumbnail path
-    await db.insert(files).values({
+    await db.insert(filesTable).values({
       file_id: fileId,
       user_id: userId,
       file_name: sanitizedFileName,
