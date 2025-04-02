@@ -5,7 +5,7 @@ import db from "@/db/relational/connection";
 import { eq } from "drizzle-orm";
 
 const userSchema = z.object({
-  userId: z.string(),
+  userId: z.string().uuid(),
   username: z.string().optional(),
   email: z.string(),
 });
@@ -18,6 +18,7 @@ export async function syncUser(
     if (!userId || !email || !username) {
       throw new Error("Invalid user data");
     }
+    console.log(userId, username, email);
     const userData = userSchema.parse({ userId, username, email });
 
     const existingUser = await db

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { syncUser } from "@/actions/sync-user";
 import { useUser } from "@clerk/nextjs";
+import {v4 as uuidv4} from "uuid";
 const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
   {
     id: "1",
@@ -44,9 +45,11 @@ export function Documents() {
   const userId = user?.id;
   const username = user?.username;
   const email = user?.emailAddresses[0].emailAddress;
+
   React.useEffect(() => {
     async function checkUser() {
-      if (userId && username && email) {
+      if ( username && email && user) {
+	      const userId = uuidv4(); 
         await syncUser(userId, username, email);
       }
     }
