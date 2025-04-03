@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { Search, X, Filter } from "lucide-react";
 import { cn } from "@/util/tailwind/cn";
 
-interface SearchBarProps {
+type SearchBarProps = {
   onSearch?: (query: string) => void;
   placeholder?: string;
   className?: string;
   showFilters?: boolean;
-}
+};
 
 export function SearchBar({
   onSearch,

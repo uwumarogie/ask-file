@@ -1,5 +1,6 @@
 import React from "react";
-import { fetchUserFiles } from "@/actions/fetch-user-files";
+import { getFiles } from "@/actions/get-files";
+
 export type File = {
   file_id: string;
 };
@@ -12,18 +13,17 @@ export function useUserFile() {
     setIsLoading(true);
     setHasError(false);
 
-    fetchUserFiles()
-      .then((response) => {
-        setFiles(response.files);
-        setHasError(response.hasError);
-      })
-      .catch((error) => {
-        console.error(error);
-        setHasError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    const _context = await getFiles();
+    const response = await _context.json();
+
+    if (response.success) {
+      setFiles(response.response);
+      return;
+    } else {
+      setFiles([]);
+      setHasError(true);
+      return;
+    }
   }, [files]);
 
   React.useEffect(() => {

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Documents } from "@/components/document";
 export type DocumentCardProps = {
@@ -36,12 +35,5 @@ const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
 ];
 
 export default function DocumentPage() {
-
-
-
-
-
-
-
   return <Documents />;
 }
