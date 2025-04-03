@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { useUser } from "@clerk/nextjs";
+
 export function LandingPageNavbar() {
   const router = useRouter();
   const { isSignedIn } = useUser();

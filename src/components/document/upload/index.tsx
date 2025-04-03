@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { Badge } from "@/components/ui/badge";
 import { uploadFileAcrossServices } from "@/actions/upload-file-into-services";
-import { initializeChatEntry } from "@/actions/initialize-chat-entry";
-import { checkFileInDatabase } from "@/actions/check-file-in-database";
+import { createConversationStart } from "@/actions/create-conversation-start";
+import { checkExistingFileName } from "@/actions/exist-file";
 
 async function handleUpload(
   file: File | null,
@@ -17,11 +17,9 @@ async function handleUpload(
     throw new Error("File does not exist");
   }
   try {
-    const fileResponse = await checkFileInDatabase(file.name);
-
-    console.log(fileResponse);
+    const _context = await checkExistingFileName(file.name);
+    const fileResponse = await _context.json();
     if (fileResponse.exist && toast) {
-      console.log("Inside the toast");
       toast({
         title: "File already exist",
         description: `Delete the current file ${file.name} in teh application or rename your uploaded file`,
@@ -30,7 +28,9 @@ async function handleUpload(
       return;
     }
 
-    const response = await uploadFileAcrossServices(file);
+    const _context_upload = await uploadFileAcrossServices(file);
+    const response = await _context_upload.json();
+
     if (!response.success) {
       throw new Error("Failed to upload file");
     }
@@ -45,7 +45,8 @@ async function handleUpload(
       throw new Error("Missing title in file data");
     }
 
-    const chatResponse = await initializeChatEntry(fileId, title, userId);
+    const _contextChatID = await createConversationStart(fileId, title, userId);
+    const chatResponse = await _contextChatID.json();
     if (!chatResponse.success) {
       throw new Error("Failed to initialize chat entry");
     }

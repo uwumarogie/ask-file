@@ -1,12 +1,9 @@
 "use server";
-import db from "@/db/relational/connection";
+import { eq, and } from "drizzle-orm";
 import { filesTable } from "@/db/relational/schema";
-import { and, eq } from "drizzle-orm";
+import db from "@/db/relational/connection";
 
-export async function deleteFileFromDatabase(
-  sanitizedFileName: string,
-  userId: string,
-) {
+export async function dbDeleteFile(sanitizedFileName: string, userId: string) {
   try {
     const existingFiles = await db
       .select()
@@ -30,11 +27,9 @@ export async function deleteFileFromDatabase(
           eq(filesTable.user_id, userId),
         ),
       );
-
-    console.debug("existingFiles", existingFiles);
     return { success: true, fileId: existingFiles[0].file_id };
   } catch (error) {
     console.error(error);
-    throw error;
+    return { success: false, error: (error as Error).message };
   }
 }

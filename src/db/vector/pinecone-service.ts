@@ -1,6 +1,6 @@
 "use server";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { generateQueryEmbedding } from "../../actions/generate-query-embedding";
+import { generateQueryEmbedding } from "../../util/openai-service/embedding-service";
 const PINECONE_HOST = process.env.PINECONE_HOST;
 import * as z from "zod";
 

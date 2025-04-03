@@ -17,6 +17,10 @@ const openAIEmbeddingSchema = z.object({
   }),
 });
 
+type GenerateEmbeddingResult =
+  | { success: true; embedding: number[][] }
+  | { success: false; error: string };
+
 export async function generateInputEmbedding(input: string | string[]) {
   const embedding = await openai.embeddings.create({
     model: "text-embedding-3-large",
@@ -47,4 +51,24 @@ export async function generateEmbedding(
   }
 
   return embeddings;
+}
+
+//NOTE: This function is not used in the project. Later use the function
+export async function generateQueryEmbedding(
+  input: string,
+): Promise<GenerateEmbeddingResult> {
+  try {
+    const embeddingResponse = await generateInputEmbedding(input);
+    const response = openAIEmbeddingSchema.parse(embeddingResponse);
+    const embedding = response.data.map((item) => item.embedding);
+
+    if (embedding.length === 0) {
+      return { success: false, error: "The embedding array was empty." };
+    }
+
+    return { success: true, embedding: embedding };
+  } catch (error) {
+    console.error("Error generating query embedding", error);
+    return { success: false, error: (error as Error).message };
+  }
 }
