@@ -1,6 +1,9 @@
 "use server";
 import db from "@/db/relational/connection";
-import { conversationTable, messageTable } from "@/db/relational/schema";
+import {
+  conversationTable,
+  messageTable,
+} from "@/db/relational/schema/business";
 import { v4 as uuidv4 } from "uuid";
 
 export async function postConversationStart(

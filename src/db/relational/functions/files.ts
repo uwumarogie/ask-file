@@ -1,7 +1,8 @@
 "use server";
 import db from "@/db/relational/connection";
 import { eq, and, desc } from "drizzle-orm";
-import { filesTable, userTable } from "@/db/relational/schema";
+import { filesTable } from "@/db/relational/schema/business";
+import { userTable } from "@/db/relational/schema/auth";
 import { getFiletype } from "@/util/file-modification/util";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { v4 as uuidv4 } from "uuid";
@@ -28,7 +29,7 @@ export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
   const dbUser = await db
     .select()
     .from(userTable)
-    .where(eq(userTable.user_id, "tets"));
+    .where(eq(userTable.id, "tets"));
 
   return (
     (
@@ -38,7 +39,7 @@ export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
         .where(
           and(
             eq(filesTable.file_name, fileName),
-            eq(filesTable.user_id, dbUser[0].user_id),
+            eq(filesTable.user_id, dbUser[0].id),
           ),
         )
     ).length > 0

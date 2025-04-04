@@ -1,6 +1,6 @@
 "use server";
 import { eq, and } from "drizzle-orm";
-import { filesTable } from "@/db/relational/schema";
+import { filesTable } from "@/db/relational/schema/business";
 import db from "@/db/relational/connection";
 
 export async function dbDeleteFile(sanitizedFileName: string, userId: string) {

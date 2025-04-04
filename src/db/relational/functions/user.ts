@@ -1,6 +1,6 @@
 "use server";
 import db from "@/db/relational/connection";
-import { userTable } from "@/db/relational/schema";
+
 import { NextResponse } from "next/server";
 
 export async function createUser() {
