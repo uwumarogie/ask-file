@@ -1,18 +1,13 @@
 "use client";
 import React from "react";
 import { queryPinecone } from "@/db/vector/pinecone-service";
-import { useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 
 export default function ChatInput() {
   const [input, setInput] = React.useState("");
   const params = useParams<{ slug: string }>();
-  const { user } = useUser();
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (user) {
-      await queryPinecone(input, user.id, params.slug);
-    }
   }
   return (
     <div className="flex items-center justify-between w-5/6">

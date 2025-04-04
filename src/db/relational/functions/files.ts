@@ -1,8 +1,7 @@
 "use server";
 import db from "@/db/relational/connection";
 import { eq, and, desc } from "drizzle-orm";
-import { filesTable } from "@/db/relational/schema";
-import { currentUser } from "@clerk/nextjs/server";
+import { filesTable, userTable } from "@/db/relational/schema";
 import { getFiletype } from "@/util/file-modification/util";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { v4 as uuidv4 } from "uuid";
@@ -20,10 +19,17 @@ type GetFilesResult = {
   response: Array<DocumentCard> | string;
 };
 export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
-  const user = await currentUser();
+  const user = null;
   if (!user) {
     throw new Error("User not authenticated");
   }
+  console.debug("user", user);
+
+  const dbUser = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.user_id, "tets"));
+
   return (
     (
       await db
@@ -32,7 +38,7 @@ export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
         .where(
           and(
             eq(filesTable.file_name, fileName),
-            eq(filesTable.user_id, user.id),
+            eq(filesTable.user_id, dbUser[0].user_id),
           ),
         )
     ).length > 0
@@ -41,7 +47,7 @@ export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
 
 export async function dbGetFiles(): Promise<GetFilesResult> {
   try {
-    const user = await currentUser();
+    const user = null;
     if (!user) {
       throw new Error("User not authenticated");
     }
@@ -54,7 +60,7 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
         favorite: filesTable.isFavorite,
       })
       .from(filesTable)
-      .where(eq(filesTable.user_id, user.id))
+      .where(eq(filesTable.user_id, "test"))
       .orderBy(desc(filesTable.updated_at));
 
     const anyFilesAvailable = userFiles.length === 0;

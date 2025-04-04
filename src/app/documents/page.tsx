@@ -34,6 +34,6 @@ const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
   },
 ];
 
-export default function DocumentPage() {
+export default async function DocumentPage() {
   return <Documents />;
 }

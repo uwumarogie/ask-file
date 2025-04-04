@@ -1,5 +1,5 @@
 {
-  "id": "67694804-78a2-44ea-a0ef-348461623075",
+  "id": "1af2740b-25c1-471c-943a-f35d24b19ae6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -50,10 +50,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "conversation_user_id_user_user_id_fk": {
-          "name": "conversation_user_id_user_user_id_fk",
+        "conversation_user_id_users_user_id_fk": {
+          "name": "conversation_user_id_users_user_id_fk",
           "tableFrom": "conversation",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -142,10 +142,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "file_user_id_user_user_id_fk": {
-          "name": "file_user_id_user_user_id_fk",
+        "file_user_id_users_user_id_fk": {
+          "name": "file_user_id_users_user_id_fk",
           "tableFrom": "file",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -187,10 +187,10 @@
         },
         "message_role": {
           "name": "message_role",
-          "type": "role",
+          "type": "message_role",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "content": {
           "name": "content",
@@ -228,10 +228,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "message_user_id_user_user_id_fk": {
-          "name": "message_user_id_user_user_id_fk",
+        "message_user_id_users_user_id_fk": {
+          "name": "message_user_id_users_user_id_fk",
           "tableFrom": "message",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -248,8 +248,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user": {
-      "name": "user",
+    "public.users": {
+      "name": "users",
       "schema": "",
       "columns": {
         "user_id": {
@@ -258,6 +258,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "user_clerk_id": {
+          "name": "user_clerk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "username": {
           "name": "username",
@@ -283,15 +289,22 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "user_username_unique": {
-          "name": "user_username_unique",
+        "users_user_clerk_id_unique": {
+          "name": "users_user_clerk_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_clerk_id"
+          ]
+        },
+        "users_username_unique": {
+          "name": "users_username_unique",
           "nullsNotDistinct": false,
           "columns": [
             "username"
           ]
         },
-        "user_email_unique": {
-          "name": "user_email_unique",
+        "users_email_unique": {
+          "name": "users_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"
@@ -304,8 +317,8 @@
     }
   },
   "enums": {
-    "public.role": {
-      "name": "role",
+    "public.message_role": {
+      "name": "message_role",
       "schema": "public",
       "values": [
         "system",

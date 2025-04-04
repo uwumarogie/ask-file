@@ -123,7 +123,6 @@ export function FileUploadZone({
 
   const getFileIcon = (fileName: string) => {
     const extension = fileName.split(".").pop()?.toLowerCase();
-
     if (extension === "pdf") {
       return <FileText className="w-8 h-8 text-red-500" />;
     } else {

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, FileText, MessageSquare, Search } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/landing-page/footer";
-import { SignOutButton, useUser } from "@clerk/nextjs";
 
 function LandingPageNavbar() {
   const router = useRouter();
@@ -55,13 +54,12 @@ function LandingPageNavbar() {
 export function Index() {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
-  const { isSignedIn } = useUser();
 
   const handleFilesUploaded = () => {
     setIsUploading(true);
     setTimeout(() => {
       setIsUploading(false);
-      return isSignedIn ? router.push("/documents") : router.push("/login");
+      return true ? router.push("/documents") : router.push("/login");
     }, 3000);
   };
 
@@ -114,7 +112,6 @@ export function Index() {
             </div>
           )}
         </section>
-        <SignOutButton />
         <section id="features" className="py-20 bg-secondary/50">
           <div className="container max-w-6xl mx-auto">
             <h2 className="text-3xl font-medium text-center mb-12">
