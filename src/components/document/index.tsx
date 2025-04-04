@@ -6,9 +6,7 @@ import { DocumentCard, DocumentCardProps } from "./document-card";
 import { SlidersHorizontal, Plus, Grid, List, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { syncUser } from "@/actions/sync-user";
-import { useUser } from "@clerk/nextjs";
-import { v4 as uuidv4 } from "uuid";
+
 const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
   {
     id: "1",
@@ -39,22 +37,7 @@ export function Documents() {
   console.log("searchQuery", searchQuery);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filteredDocs, setFilteredDocs] = useState(mockDocuments);
-
   const router = useRouter();
-  const { user } = useUser();
-  const userId = user?.id;
-  const username = user?.username;
-  const email = user?.emailAddresses[0].emailAddress;
-
-  React.useEffect(() => {
-    async function checkUser() {
-      if (username && email && user) {
-        const userId = uuidv4();
-        await syncUser(userId, username, email);
-      }
-    }
-    checkUser();
-  }, [email, userId, username]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

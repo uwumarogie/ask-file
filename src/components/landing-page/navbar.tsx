@@ -4,12 +4,9 @@ import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { useUser } from "@clerk/nextjs";
 
 export function LandingPageNavbar() {
   const router = useRouter();
-  const { isSignedIn } = useUser();
-  console.debug("isSignedIn", isSignedIn);
 
   const navItems = [
     {
@@ -40,7 +37,7 @@ export function LandingPageNavbar() {
             </Link>
           ))}
         </nav>
-        {isSignedIn ? (
+        {false ? (
           <Button variant="outline" onClick={() => router.push("/documents")}>
             Dashboard
             <ArrowRight className="ml-2 w-4 h-4" />

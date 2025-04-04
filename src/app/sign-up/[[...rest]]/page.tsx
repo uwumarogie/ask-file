@@ -1,5 +1,4 @@
 import { FileText } from "lucide-react";
-import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 export default function SignUpPage() {
   return (
@@ -12,9 +11,7 @@ export default function SignUpPage() {
         <h1 className="text-2xl font-semibold">Welcome Back</h1>
         <p className="text-muted-foreground mt-1">Sign up to try DocuMind</p>
       </div>
-      <div className="flex justify-center items-center">
-        <SignUp />
-      </div>
+      <div className="flex justify-center items-center"></div>
       <p className="text-muted-foreground text-sm mt-8">
         Do you already have an account?{" "}
         <Link href="/login" className="text-primary hover:underline">

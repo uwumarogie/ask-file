@@ -29,7 +29,7 @@ async function handleUpload(
     }
 
     const _context_upload = await uploadFileAcrossServices(file);
-    const response = await _context_upload.json();
+    const response = await _context_upload?.json();
 
     if (!response.success) {
       throw new Error("Failed to upload file");
