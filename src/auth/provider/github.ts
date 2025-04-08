@@ -54,14 +54,14 @@ const githubProfileSchema = z.object({
 export async function handleSignInGithubCallback({
   account,
   profile,
-  token,
 }: {
   account: Account;
   profile: Profile | undefined;
-  token: JWT;
 }): Promise<JWT> {
+  console.debug("account", account);
+  console.debug("profile", profile);
   const parseGithubProfile = githubProfileSchema.parse(profile);
   const _context = await dbGetOrCreateGithubUser(parseGithubProfile, account);
   const { success, response: user } = await _context?.json();
-  return success ? setCorrectToken(user, token, account) : token;
+  return success;
 }

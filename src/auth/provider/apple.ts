@@ -28,7 +28,6 @@ const appleProfileSchema = z.object({
 export async function handleSignInAppleCallBack({
   account,
   profile,
-  token,
 }: {
   account: Account;
   profile: Profile | undefined;
@@ -36,6 +35,6 @@ export async function handleSignInAppleCallBack({
 }) {
   const parseAppleProfile = appleProfileSchema.parse(profile);
   const _context = await dbGetOrCreateAppleUser(parseAppleProfile, account);
-  const { success, response: user } = await _context?.json();
-  return success ? setCorrectToken(user, token, account) : token;
+  const { success, response: user1 } = await _context?.json();
+  return success;
 }

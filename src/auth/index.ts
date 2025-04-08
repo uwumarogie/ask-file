@@ -58,6 +58,23 @@ const session = {
 };
 
 const callbacks = {
+  async signIn({
+    account,
+    profile,
+  }: {
+    user: User;
+    account: Account;
+    profile: Profile;
+  }) {
+    if (account?.provider === "google") {
+      return await handleSignInGoogleCallback({ account, profile });
+    } else if (account?.provider === "apple") {
+      return await handleSignInAppleCallBack({ account, profile });
+    } else if (account?.provider === "github") {
+      console.log("GITHUB");
+      return await handleSignInGithubCallback({ account, profile });
+    }
+  },
   async jwt({
     token,
     account,
@@ -69,16 +86,6 @@ const callbacks = {
     profile: Profile;
     trigger: string;
   }) {
-    if (trigger === "signIn") {
-      if (account?.provider === "google") {
-        return await handleSignInGoogleCallback({ account, profile, token });
-      } else if (account?.provider === "apple") {
-        return await handleSignInAppleCallBack({ account, profile, token });
-      } else if (account?.provider === "github") {
-        console.log("GITHUB");
-        return await handleSignInGithubCallback({ account, profile, token });
-      }
-    }
     return token;
   },
   async session({ session, user }: { session: Session; user: User }) {

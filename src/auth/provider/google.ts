@@ -3,7 +3,7 @@ import { JWT } from "next-auth/jwt";
 import * as z from "zod";
 import { dbGetOrCreateGoogleUser } from "@/db/relational/functions/user";
 import { setCorrectToken } from "@/auth/helper";
-
+import { User } from "next-auth";
 const googleProfileSchema = z.object({
   aud: z.string(),
   azp: z.string(),
@@ -25,14 +25,12 @@ const googleProfileSchema = z.object({
 export async function handleSignInGoogleCallback({
   account,
   profile,
-  token,
 }: {
   account: Account;
   profile: Profile | undefined;
-  token: JWT;
 }) {
   const googleProfile = googleProfileSchema.parse(profile);
   const _context = await dbGetOrCreateGoogleUser(googleProfile, account);
-  const { success, response: user } = await _context?.json();
-  return success ? setCorrectToken(user, token, account) : token;
+  const { success, response: user1 } = await _context?.json();
+  return success;
 }
