@@ -8,6 +8,13 @@
       "when": 1743808438235,
       "tag": "0000_exotic_shape",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1743935254081,
+      "tag": "0001_heavy_ezekiel_stane",
+      "breakpoints": true
     }
   ]
 }

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, FileText, MessageSquare, Search } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/landing-page/footer";
-
 function LandingPageNavbar() {
   const router = useRouter();
   const navItems = [
@@ -42,7 +41,7 @@ function LandingPageNavbar() {
             </Link>
           ))}
         </nav>
-        <Button variant="outline" onClick={() => router.push("/documents")}>
+        <Button variant="outline" onClick={() => router.push("/login")}>
           Dashboard
           <ArrowRight className="ml-2 w-4 h-4" />
         </Button>

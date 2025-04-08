@@ -9,17 +9,18 @@ import {
 } from "drizzle-orm/pg-core";
 import { type AdapterAccountType } from "@auth/core/adapters";
 
-// -----------  AUTHENTICATION TABLES ----------- //
-
 export const userTable = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: uuid("user_id").defaultRandom().primaryKey(),
   name: text("name"),
   email: text("email").unique(),
   emailVerified: timestamp("email_verified", {
     mode: "date",
-  }),
+  })
+    .defaultNow()
+    .notNull(),
   image: text("image"),
 });
+export type UserModel = typeof userTable.$inferSelect;
 
 export const accountTable = pgTable(
   "account",

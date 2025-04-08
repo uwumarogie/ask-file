@@ -8,7 +8,6 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import * as z from "zod";
 import { userTable } from "@/db/relational/schema/auth";
 
 export const filesTable = pgTable("file", {
