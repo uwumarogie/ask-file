@@ -3,8 +3,6 @@ import db from "@/db/relational/connection";
 import { userTable, accountTable } from "@/db/relational/schema/auth";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import { GoogleProfile } from "next-auth/providers/google";
-import { AppleProfile } from "next-auth/providers/apple";
 import type { GitHubProfile } from "next-auth/providers/github";
 import { Account } from "next-auth";
 import { generateUUID } from "@/util/uuid";

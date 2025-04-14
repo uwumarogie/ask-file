@@ -83,7 +83,7 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
       response: response,
     };
   } catch (error) {
-    console.error("Error fetching files, error");
+    console.error("Error fetching files, error", error);
     return {
       success: false,
       response: "Error fetching files, error",
