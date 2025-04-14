@@ -1,24 +1,12 @@
-"use server";
-import db from "@/db/relational/connection";
-import { userTable, accountTable } from "@/db/relational/schema/auth";
+import { JWT } from "next-auth/jwt";
+import { Account, Profile } from "next-auth";
+import { githubProfileSchema } from "./schema";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import type { GitHubProfile } from "next-auth/providers/github";
-import { Account } from "next-auth";
+import { GitHubProfile } from "next-auth/providers/github";
+import { userTable, accountTable } from "@/db/relational/schema/auth";
 import { generateUUID } from "@/util/uuid";
-
-export async function dbGetUserById(userId: string) {
-  try {
-    const [user] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.id, userId));
-    return user;
-  } catch (error) {
-    console.error("Error getting user by id", error);
-    return undefined;
-  }
-}
+import db from "@/db/relational/connection";
 
 export async function dbGetOrCreateGithubUser(
   profile: GitHubProfile,
@@ -75,4 +63,16 @@ export async function dbGetOrCreateGithubUser(
       success: false,
     });
   }
+}
+export async function handleSignInGithubCallback({
+  account,
+  profile,
+}: {
+  account: Account;
+  profile: Profile | undefined;
+}): Promise<JWT> {
+  const parseGithubProfile = githubProfileSchema.parse(profile);
+  const _context = await dbGetOrCreateGithubUser(parseGithubProfile, account);
+  const { success } = await _context?.json();
+  return success;
 }

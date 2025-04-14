@@ -1,31 +1,33 @@
 "use server";
 import db from "@/db/relational/connection";
-import { conversationTable, messageTable } from "@/db/relational/schema";
-import { v4 as uuidv4 } from "uuid";
-
+import {
+  conversationTable,
+  messageTable,
+} from "@/db/relational/schema/business";
+import { generateUUID } from "@/util/uuid";
 export async function postConversationStart(
   fileId: string,
   title: string,
   userId: string,
 ) {
   try {
-    const chatId = uuidv4();
-    const messageId = uuidv4();
+    const chatId = generateUUID();
+    const messageId = generateUUID();
     const systemMessage =
       "How can I help your with your technical documents today?";
 
     await db.transaction(async (tx) => {
       await tx.insert(conversationTable).values({
-        chat_id: chatId,
-        user_id: userId,
-        file_id: fileId,
+        conversationId: chatId,
+        userId: userId,
+        fileId: fileId,
         title: title,
       });
       await tx.insert(messageTable).values({
-        message_id: messageId,
-        chat_id: chatId,
-        user_id: userId,
-        message_role: "system",
+        messageId: messageId,
+        chatId: chatId,
+        userId: userId,
+        messageRole: "assistant",
         content: systemMessage,
       });
     });

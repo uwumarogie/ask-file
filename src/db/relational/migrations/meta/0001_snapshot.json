@@ -1,6 +1,6 @@
 {
-  "id": "964fda57-1d47-4a5d-bfdf-58f539f41c79",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b730630e-cae0-419f-9c76-66ae6f5ba646",
+  "prevId": "964fda57-1d47-4a5d-bfdf-58f539f41c79",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -77,15 +77,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "account_user_id_users_id_fk": {
-          "name": "account_user_id_users_id_fk",
+        "account_user_id_users_user_id_fk": {
+          "name": "account_user_id_users_user_id_fk",
           "tableFrom": "account",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "id"
+            "user_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -152,15 +152,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "authenticator_user_id_users_id_fk": {
-          "name": "authenticator_user_id_users_id_fk",
+        "authenticator_user_id_users_user_id_fk": {
+          "name": "authenticator_user_id_users_user_id_fk",
           "tableFrom": "authenticator",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "id"
+            "user_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -205,15 +205,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "session_user_id_users_id_fk": {
-          "name": "session_user_id_users_id_fk",
+        "session_user_id_users_user_id_fk": {
+          "name": "session_user_id_users_user_id_fk",
           "tableFrom": "session",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "id"
+            "user_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -229,8 +229,8 @@
       "name": "users",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
+        "user_id": {
+          "name": "user_id",
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
@@ -252,7 +252,8 @@
           "name": "email_verified",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "now()"
         },
         "image": {
           "name": "image",
@@ -354,15 +355,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "conversation_user_id_users_id_fk": {
-          "name": "conversation_user_id_users_id_fk",
+        "conversation_user_id_users_user_id_fk": {
+          "name": "conversation_user_id_users_user_id_fk",
           "tableFrom": "conversation",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "id"
+            "user_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -446,15 +447,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "file_user_id_users_id_fk": {
-          "name": "file_user_id_users_id_fk",
+        "file_user_id_users_user_id_fk": {
+          "name": "file_user_id_users_user_id_fk",
           "tableFrom": "file",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "id"
+            "user_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -533,15 +534,15 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "message_user_id_users_id_fk": {
-          "name": "message_user_id_users_id_fk",
+        "message_user_id_users_user_id_fk": {
+          "name": "message_user_id_users_user_id_fk",
           "tableFrom": "message",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "id"
+            "user_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"

@@ -1,27 +1,14 @@
-"use server";
-import db from "@/db/relational/connection";
-import { userTable, accountTable } from "@/db/relational/schema/auth";
+import { Account, Profile } from "next-auth";
+import { appleProfileSchema } from "./schema";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import type { GitHubProfile } from "next-auth/providers/github";
-import { Account } from "next-auth";
+import { AppleProfile } from "next-auth/providers/apple";
+import { userTable, accountTable } from "@/db/relational/schema/auth";
 import { generateUUID } from "@/util/uuid";
+import db from "@/db/relational/connection";
 
-export async function dbGetUserById(userId: string) {
-  try {
-    const [user] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.id, userId));
-    return user;
-  } catch (error) {
-    console.error("Error getting user by id", error);
-    return undefined;
-  }
-}
-
-export async function dbGetOrCreateGithubUser(
-  profile: GitHubProfile,
+export async function dbGetOrCreateAppleUser(
+  profile: AppleProfile,
   account: Account,
 ) {
   try {
@@ -35,22 +22,22 @@ export async function dbGetOrCreateGithubUser(
     const [user] = await db
       .select()
       .from(userTable)
-      .where(eq(userTable.name, profile.name!));
+      .where(eq(userTable.id, account.userId!));
 
     if (user === undefined || user === null) {
       const userId = generateUUID();
-
       await db.transaction(async (tx) => {
         await tx.insert(userTable).values({
           id: userId,
           name: profile.name,
           email: profile.email,
+          image: profile.image,
         });
 
         await tx.insert(accountTable).values({
           userId: userId,
           type: "oauth",
-          provider: "github",
+          provider: "apple",
           providerAccountId: account.providerAccountId,
           refresh_token: account.access_token,
           expires_at: account.expires_at,
@@ -63,8 +50,10 @@ export async function dbGetOrCreateGithubUser(
 
       return NextResponse.json({
         success: true,
+        response: "User created",
       });
     }
+
     return NextResponse.json({
       success: true,
       response: "User already exists",
@@ -73,6 +62,20 @@ export async function dbGetOrCreateGithubUser(
     console.error("Error creating user", error);
     return NextResponse.json({
       success: false,
+      response: (error as Error).message,
     });
   }
+}
+
+export async function handleSignInAppleCallBack({
+  account,
+  profile,
+}: {
+  account: Account;
+  profile: Profile | undefined;
+}) {
+  const parseAppleProfile = appleProfileSchema.parse(profile);
+  const _context = await dbGetOrCreateAppleUser(parseAppleProfile, account);
+  const { success } = await _context?.json();
+  return success;
 }

@@ -1,6 +1,6 @@
 "use server";
 import { eq, and } from "drizzle-orm";
-import { filesTable } from "@/db/relational/schema";
+import { filesTable } from "@/db/relational/schema/business";
 import db from "@/db/relational/connection";
 
 export async function dbDeleteFile(sanitizedFileName: string, userId: string) {
@@ -10,8 +10,8 @@ export async function dbDeleteFile(sanitizedFileName: string, userId: string) {
       .from(filesTable)
       .where(
         and(
-          eq(filesTable.file_name, sanitizedFileName),
-          eq(filesTable.user_id, userId),
+          eq(filesTable.fileName, sanitizedFileName),
+          eq(filesTable.userId, userId),
         ),
       );
 
@@ -23,11 +23,11 @@ export async function dbDeleteFile(sanitizedFileName: string, userId: string) {
       .delete(filesTable)
       .where(
         and(
-          eq(filesTable.file_name, sanitizedFileName),
-          eq(filesTable.user_id, userId),
+          eq(filesTable.fileName, sanitizedFileName),
+          eq(filesTable.userId, userId),
         ),
       );
-    return { success: true, fileId: existingFiles[0].file_id };
+    return { success: true, fileId: existingFiles[0].fileId};
   } catch (error) {
     console.error(error);
     return { success: false, error: (error as Error).message };
