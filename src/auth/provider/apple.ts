@@ -1,29 +1,71 @@
 import { Account, Profile } from "next-auth";
-import { JWT } from "next-auth/jwt";
-import * as z from "zod";
-import { dbGetOrCreateAppleUser } from "@/db/relational/functions/user";
-import { setCorrectToken } from "@/auth/helper";
+import { appleProfileSchema } from "./schema";
+import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { AppleProfile } from "next-auth/providers/apple";
+import { userTable, accountTable } from "@/db/relational/schema/auth";
+import { generateUUID } from "@/util/uuid";
+import db from "@/db/relational/connection";
 
-const appleProfileSchema = z.object({
-  iss: z.literal("https://appleid.apple.com"),
-  aud: z.string(),
-  iat: z.number(),
-  exp: z.number(),
-  sub: z.string(),
-  nonce: z.string(),
-  nonce_supported: z.boolean(),
-  email: z.string(),
-  email_verified: z.union([z.literal("true"), z.literal(true)]),
-  is_private_email: z.union([
-    z.literal("true"),
-    z.literal("false"),
-    z.boolean(),
-  ]),
-  real_user_status: z.union([z.literal(0), z.literal(1), z.literal(2)]),
-  transfer_sub: z.string(),
-  at_hash: z.string(),
-  auth_time: z.number(),
-});
+export async function dbGetOrCreateAppleUser(
+  profile: AppleProfile,
+  account: Account,
+) {
+  try {
+    if (account === undefined || account == null) {
+      return NextResponse.json({
+        success: false,
+        response: "Account is undefined",
+      });
+    }
+
+    const [user] = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.id, account.userId!));
+
+    if (user === undefined || user === null) {
+      const userId = generateUUID();
+      await db.transaction(async (tx) => {
+        await tx.insert(userTable).values({
+          id: userId,
+          name: profile.name,
+          email: profile.email,
+          image: profile.image,
+        });
+
+        await tx.insert(accountTable).values({
+          userId: userId,
+          type: "oauth",
+          provider: "apple",
+          providerAccountId: account.providerAccountId,
+          refresh_token: account.access_token,
+          expires_at: account.expires_at,
+          token_type: account.token_type,
+          scope: account.scope,
+          id_token: account.id_token,
+          session_state: "logged in",
+        });
+      });
+
+      return NextResponse.json({
+        success: true,
+        response: "User created",
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      response: "User already exists",
+    });
+  } catch (error) {
+    console.error("Error creating user", error);
+    return NextResponse.json({
+      success: false,
+      response: (error as Error).message,
+    });
+  }
+}
 
 export async function handleSignInAppleCallBack({
   account,
@@ -31,10 +73,9 @@ export async function handleSignInAppleCallBack({
 }: {
   account: Account;
   profile: Profile | undefined;
-  token: JWT;
 }) {
   const parseAppleProfile = appleProfileSchema.parse(profile);
   const _context = await dbGetOrCreateAppleUser(parseAppleProfile, account);
-  const { success, response: user1 } = await _context?.json();
+  const { success } = await _context?.json();
   return success;
 }

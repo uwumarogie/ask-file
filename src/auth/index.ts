@@ -1,55 +1,43 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import AppleProvider from "next-auth/providers/apple";
-import GithubProvider from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+import Apple from "next-auth/providers/apple";
+import Github from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import db from "@/db/relational/connection";
 import { dbGetUserById } from "@/db/relational/functions/user";
-import {
-  userTable,
-  accountTable,
-  sessionsTable,
-  verificationTokensTable,
-} from "@/db/relational/schema/auth";
 import { handleSignInGoogleCallback } from "./provider/google";
 import { handleSignInAppleCallBack } from "./provider/apple";
 import { handleSignInGithubCallback } from "./provider/github";
-import type { Account, NextAuthOptions, Profile } from "next-auth";
+import { userTable, accountTable } from "@/db/relational/schema/auth";
+import type { Account, Profile, NextAuthConfig } from "next-auth";
 import type { Provider } from "next-auth/providers/index";
 import type { JWT } from "next-auth/jwt";
 import type { Session, User } from "next-auth";
 
 const SESSION_LIFETIME = 60 * 60 * 8;
 
-console.debug("GITHUB_CLIENT_ID", process.env.AUTH_GITHUB_ID);
 const providers: Provider[] = [
-  GoogleProvider({
-    clientId: "öiwornwe",
-    clientSecret: "rulköwnerw",
+  Google({
+    clientId: process.env.AUTH_GOOGLE_ID!,
+    clientSecret: process.env.AUTH_GOOGLE_SECRET!,
   }),
-  AppleProvider({
-    clientId: "ilewnrwe",
-    clientSecret: "iöwemrowöämr",
+  Apple({
+    clientId: process.env.AUTH_APPLE_ID!,
+    clientSecret: process.env.AUTH_APPLE_SECRET!,
   }),
-  GithubProvider({
+  Github({
     clientId: process.env.AUTH_GITHUB_ID!,
     clientSecret: process.env.AUTH_GITHUB_SECRET!,
   }),
 ];
 
-export const providersMap = providers.map((provider) => {
-  return { id: provider.id, name: provider.name };
-});
-
 const adapter = DrizzleAdapter(db, {
   usersTable: userTable,
   accountsTable: accountTable,
-  sessionsTable: sessionsTable,
-  verificationTokensTable: verificationTokensTable,
 });
 const pages = {
-  signIn: "/login",
-  error: "/login",
+  signIn: "/sign-in",
+  error: "/sign-in",
 };
 
 const session = {
@@ -58,37 +46,21 @@ const session = {
 };
 
 const callbacks = {
-  async signIn({
-    account,
-    profile,
-  }: {
-    user: User;
-    account: Account;
-    profile: Profile;
-  }) {
+  async signIn({ account, profile }: { account: Account; profile: Profile }) {
     if (account?.provider === "google") {
       return await handleSignInGoogleCallback({ account, profile });
     } else if (account?.provider === "apple") {
       return await handleSignInAppleCallBack({ account, profile });
     } else if (account?.provider === "github") {
-      console.log("GITHUB");
       return await handleSignInGithubCallback({ account, profile });
     }
   },
-  async jwt({
-    token,
-    account,
-    profile,
-    trigger,
-  }: {
-    token: JWT;
-    account: Account;
-    profile: Profile;
-    trigger: string;
-  }) {
+  async jwt({ token }: { token: JWT }) {
     return token;
   },
   async session({ session, user }: { session: Session; user: User }) {
+    console.debug("session", session);
+    console.debug("user", user);
     const userId = user.id;
     if (userId === undefined || userId == null) return session;
     const dbUser = await dbGetUserById(userId);
@@ -101,6 +73,7 @@ const callbacks = {
 };
 
 const debug = true;
+
 export const authOptions = {
   adapter,
   providers,
@@ -108,8 +81,6 @@ export const authOptions = {
   pages,
   session,
   callbacks,
-} as NextAuthOptions;
+} as NextAuthConfig;
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authOptions,
-});
+export const { auth, handlers, signIn, signOut } = NextAuth({ ...authOptions });

@@ -1,13 +1,19 @@
-import { signIn } from "@/auth";
+"use client";
+import { signIn, useSession, signOut } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export default function SignInPage() {
+  // const session = useSession();
+  // if (session !== null) {
+  //   redirect("/documents");
+  // }
+  //
   return (
     <div className="flex items-center justify-center h-fit min-h-screen">
       <div className="shadow-xl p-12 rounded-2xl flex flex-col gap-4">
         <form
-          action={async () => {
-            "use server";
-            await signIn("github", { redirectTo: "/dashboard" });
+          action={() => {
+            signIn("github", { redirectTo: "/documents" });
           }}
         >
           <button
@@ -18,9 +24,8 @@ export default function SignInPage() {
           </button>
         </form>
         <form
-          action={async () => {
-            "use server";
-            await signIn("google", { redirectTo: "/" });
+          action={() => {
+            signOut();
           }}
         >
           <button

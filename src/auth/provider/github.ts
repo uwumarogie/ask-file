@@ -1,56 +1,69 @@
 import { JWT } from "next-auth/jwt";
 import { Account, Profile } from "next-auth";
-import * as z from "zod";
-import { dbGetOrCreateGithubUser } from "@/db/relational/functions/user";
-import { setCorrectToken } from "@/auth/helper";
-const githubProfileSchema = z.object({
-  login: z.string(),
-  id: z.number(),
-  node_id: z.string(),
-  avatar_url: z.string(),
-  gravatar_id: z.string().nullable(),
-  url: z.string(),
-  html_url: z.string(),
-  followers_url: z.string(),
-  following_url: z.string(),
-  gists_url: z.string(),
-  starred_url: z.string(),
-  subscriptions_url: z.string(),
-  organizations_url: z.string(),
-  repos_url: z.string(),
-  events_url: z.string(),
-  received_events_url: z.string(),
-  type: z.string(),
-  site_admin: z.boolean(),
-  name: z.string().nullable(),
-  company: z.string().nullable(),
-  blog: z.string().nullable(),
-  location: z.string().nullable(),
-  email: z.string().nullable(),
-  hireable: z.boolean().nullable(),
-  bio: z.string().nullable(),
-  twitter_username: z.string().nullable(),
-  public_repos: z.number(),
-  public_gists: z.number(),
-  followers: z.number(),
-  following: z.number(),
-  created_at: z.string(),
-  updated_at: z.string(),
-  private_gists: z.number(),
-  total_private_repos: z.number(),
-  owned_private_repos: z.number(),
-  disk_usage: z.number(),
-  suspended_at: z.string().nullable(),
-  collaborators: z.number(),
-  two_factor_authentication: z.boolean(),
-  plan: z.object({
-    collaborators: z.number(),
-    name: z.string(),
-    space: z.number(),
-    private_repos: z.number(),
-  }),
-});
+import { githubProfileSchema } from "./schema";
+import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { GitHubProfile } from "next-auth/providers/github";
+import { userTable, accountTable } from "@/db/relational/schema/auth";
+import { generateUUID } from "@/util/uuid";
+import db from "@/db/relational/connection";
 
+export async function dbGetOrCreateGithubUser(
+  profile: GitHubProfile,
+  account: Account,
+) {
+  try {
+    if (account === undefined || account == null) {
+      return NextResponse.json({
+        success: false,
+        response: "Account is undefined",
+      });
+    }
+
+    const [user] = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.name, profile.name!));
+
+    if (user === undefined || user === null) {
+      const userId = generateUUID();
+
+      await db.transaction(async (tx) => {
+        await tx.insert(userTable).values({
+          id: userId,
+          name: profile.name,
+          email: profile.email,
+        });
+
+        await tx.insert(accountTable).values({
+          userId: userId,
+          type: "oauth",
+          provider: "github",
+          providerAccountId: account.providerAccountId,
+          refresh_token: account.access_token,
+          expires_at: account.expires_at,
+          token_type: account.token_type,
+          scope: account.scope,
+          id_token: account.id_token,
+          session_state: "logged in",
+        });
+      });
+
+      return NextResponse.json({
+        success: true,
+      });
+    }
+    return NextResponse.json({
+      success: true,
+      response: "User already exists",
+    });
+  } catch (error) {
+    console.error("Error creating user", error);
+    return NextResponse.json({
+      success: false,
+    });
+  }
+}
 export async function handleSignInGithubCallback({
   account,
   profile,
@@ -58,10 +71,8 @@ export async function handleSignInGithubCallback({
   account: Account;
   profile: Profile | undefined;
 }): Promise<JWT> {
-  console.debug("account", account);
-  console.debug("profile", profile);
   const parseGithubProfile = githubProfileSchema.parse(profile);
   const _context = await dbGetOrCreateGithubUser(parseGithubProfile, account);
-  const { success, response: user } = await _context?.json();
+  const { success } = await _context?.json();
   return success;
 }
