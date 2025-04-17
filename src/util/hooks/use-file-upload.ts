@@ -1,6 +1,5 @@
 import React from "react";
 import { useToast } from "@/util/hooks/use-toast";
-import { checkExistingFileName } from "@/actions/exist-file";
 import { uploadFileAcrossServices } from "@/db/relational/functions/files";
 
 export function useFileUpload(file: File | null): string | undefined {
@@ -13,8 +12,14 @@ export function useFileUpload(file: File | null): string | undefined {
     (async () => {
       try {
         // Check duplicate file name
-        const existingRes = await checkExistingFileName(file.name);
+        const existingRes = await fetch("/api/check-file-existance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: file.name }),
+        });
+
         const { exist } = await existingRes.json();
+
         if (exist) {
           toast({
             title: "File already exists",
@@ -38,6 +43,7 @@ export function useFileUpload(file: File | null): string | undefined {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileId, title }),
         });
+
         const chatJson = await chatRes.json();
         if (!chatRes.ok || !chatJson.success) {
           throw new Error("Failed to initialize chat entry");

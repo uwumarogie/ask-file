@@ -1,5 +1,4 @@
 import React from "react";
-import { getFiles } from "@/actions/get-files";
 
 export type File = {
   file_id: string;
@@ -13,7 +12,7 @@ export function useUserFile() {
     setIsLoading(true);
     setHasError(false);
 
-    const _context = await getFiles();
+    const _context = await fetch("/api/get-files");
     const response = await _context.json();
 
     if (response.success) {
