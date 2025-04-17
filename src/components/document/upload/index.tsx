@@ -5,57 +5,7 @@ import { Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { Badge } from "@/components/ui/badge";
-import { uploadFileAcrossServices } from "@/db/relational/functions/files";
-import { createConversationStart } from "@/actions/create-conversation-start";
-import { checkExistingFileName } from "@/actions/exist-file";
-
-async function handleUpload(
-  file: File | null,
-  toast?: Function,
-): Promise<string | undefined> {
-  if (!file) {
-    throw new Error("File does not exist");
-  }
-  try {
-    const _context = await checkExistingFileName(file.name);
-    const fileResponse = await _context.json();
-    if (fileResponse.exist && toast) {
-      toast({
-        title: "File already exist",
-        description: `Delete the current file ${file.name} in teh application or rename your uploaded file`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const _context_upload = await uploadFileAcrossServices(file);
-    const response = await _context_upload?.json();
-
-    if (!response.success) {
-      throw new Error("Failed to upload file");
-    }
-
-    const fileData = response.fileData;
-    if (!fileData) {
-      throw new Error("Missing file data in the upload response");
-    }
-
-    const { userId, fileId, title } = fileData;
-    if (!title) {
-      throw new Error("Missing title in file data");
-    }
-
-    const _contextChatID = await createConversationStart(fileId, title, userId);
-    const chatResponse = await _contextChatID.json();
-    if (!chatResponse.success) {
-      throw new Error("Failed to initialize chat entry");
-    }
-
-    return chatResponse.chatId;
-  } catch (error) {
-    console.error("Error uploading file", error);
-  }
-}
+import { useFileUpload } from "@/util/hooks/use-file-upload";
 
 export function DocumentUpload() {
   return (
@@ -83,7 +33,7 @@ export function DocumentUpload() {
           </p>
 
           <div className="mt-6">
-            <FileUploadZone onFileUploaded={handleUpload} />
+            <FileUploadZone onFileUploaded={useFileUpload} />
           </div>
           <div className="mt-8 bg-muted/40 rounded-lg p-4">
             <h3 className="text-sm font-medium mb-2">Supported file types:</h3>

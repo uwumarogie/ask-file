@@ -157,7 +157,6 @@ export async function uploadFileAcrossServices(file: File) {
     return NextResponse.json({
       success: true,
       fileData: {
-        userId: uploadResult.userId!,
         fileId: uploadResult.fileId!,
         title: uploadResult.fileName,
       },
