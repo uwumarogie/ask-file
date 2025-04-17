@@ -3,20 +3,13 @@
 import React, { useState, useCallback } from "react";
 import { Upload, File, FileText, X } from "lucide-react";
 import { cn } from "@/util/tailwind/cn";
-import { Toast, ToasterToast, useToast } from "@/util/hooks/use-toast";
+import { useToast } from "@/util/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 
 type FileUploadZoneProps = {
-  onFileUploaded?: (
-    file: File | null,
-    toast?: ({ ...props }: Toast) => {
-      id: string;
-      dismiss: () => void;
-      update: (props: ToasterToast) => void;
-    },
-  ) => Promise<string | undefined> | void;
+  onFileUploaded?: (file: File | null) => string | undefined | void;
   accept?: string;
   maxSize?: number;
 };
@@ -84,7 +77,7 @@ export function FileUploadZone({
         setFile(selectedFile);
 
         if (onFileUploaded) {
-          onFileUploaded(selectedFile, toast);
+          onFileUploaded(selectedFile);
         }
 
         toast({
@@ -225,4 +218,3 @@ export function FileUploadZone({
     </div>
   );
 }
-

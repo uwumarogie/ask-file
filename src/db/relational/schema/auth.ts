@@ -6,6 +6,8 @@ import {
   primaryKey,
   uuid,
 } from "drizzle-orm/pg-core";
+import { createSelectSchema } from "drizzle-zod";
+
 import { type AdapterAccountType } from "@auth/core/adapters";
 
 export const userTable = pgTable("users", {
@@ -46,3 +48,6 @@ export const accountTable = pgTable(
     },
   ],
 );
+
+
+export const userSchema = createSelectSchema(userTable);
