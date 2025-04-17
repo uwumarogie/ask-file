@@ -6,6 +6,7 @@ import { userTable } from "@/db/relational/schema/auth";
 import { getFiletype } from "@/util/file-modification/util";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { generateUUID } from "@/util/uuid";
+
 export type DocumentCard = {
   id: string;
   title: string;
@@ -18,6 +19,7 @@ type GetFilesResult = {
   success: boolean;
   response: Array<DocumentCard> | string;
 };
+
 export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
   const user = null;
   if (!user) {

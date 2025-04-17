@@ -61,13 +61,13 @@ const callbacks = {
   async session({ session, user }: { session: Session; user: User }) {
     console.debug("session", session);
     console.debug("user", user);
-    const userId = user.id;
-    if (userId === undefined || userId == null) return session;
-    const dbUser = await dbGetUserById(userId);
-    if (dbUser === undefined) {
-      throw new Error(`Could not find user with id ${userId}`);
-    }
-    session.user = dbUser;
+    // const userId = user.id;
+    // if (userId === undefined || userId == null) return session;
+    // const dbUser = await dbGetUserById(userId);
+    // if (dbUser === undefined) {
+    //   throw new Error(`Could not find user with id ${userId}`);
+    // }
+    // session.user = dbUser;
     return session;
   },
 };
