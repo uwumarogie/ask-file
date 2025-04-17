@@ -2,21 +2,28 @@
 import db from "@/db/relational/connection";
 import { userTable, accountTable } from "@/db/relational/schema/auth";
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import type { GitHubProfile } from "next-auth/providers/github";
 import { Account } from "next-auth";
 import { generateUUID } from "@/util/uuid";
+import { auth } from "@/auth";
 
-export async function dbGetUserById(userId: string) {
+export async function getUser() {
   try {
+    const userInformation = await auth();
+    if (userInformation == undefined || userInformation == null) {
+      throw new Error("User not authenticated");
+    }
+
     const [user] = await db
       .select()
       .from(userTable)
-      .where(eq(userTable.id, userId));
+      .where(eq(userTable.email, userInformation?.user?.email!));
+
     return user;
   } catch (error) {
     console.error("Error getting user by id", error);
-    return undefined;
+    throw new Error("Error getting user by id");
   }
 }
 
@@ -35,7 +42,12 @@ export async function dbGetOrCreateGithubUser(
     const [user] = await db
       .select()
       .from(userTable)
-      .where(eq(userTable.name, profile.name!));
+      .where(
+        and(
+          eq(userTable.name, profile.name!),
+          eq(userTable.email, profile.email!),
+        ),
+      );
 
     if (user === undefined || user === null) {
       const userId = generateUUID();

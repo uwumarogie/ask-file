@@ -4,15 +4,19 @@ import Apple from "next-auth/providers/apple";
 import Github from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import db from "@/db/relational/connection";
-import { dbGetUserById } from "@/db/relational/functions/user";
+import { getUser } from "@/db/relational/functions/user";
 import { handleSignInGoogleCallback } from "./provider/google";
 import { handleSignInAppleCallBack } from "./provider/apple";
 import { handleSignInGithubCallback } from "./provider/github";
-import { userTable, accountTable } from "@/db/relational/schema/auth";
+import {
+  userTable,
+  accountTable,
+  userSchema,
+} from "@/db/relational/schema/auth";
 import type { Account, Profile, NextAuthConfig } from "next-auth";
 import type { Provider } from "next-auth/providers/index";
 import type { JWT } from "next-auth/jwt";
-import type { Session, User } from "next-auth";
+import type { Session } from "next-auth";
 
 const SESSION_LIFETIME = 60 * 60 * 8;
 
@@ -58,16 +62,10 @@ const callbacks = {
   async jwt({ token }: { token: JWT }) {
     return token;
   },
-  async session({ session, user }: { session: Session; user: User }) {
-    console.debug("session", session);
-    console.debug("user", user);
-    // const userId = user.id;
-    // if (userId === undefined || userId == null) return session;
-    // const dbUser = await dbGetUserById(userId);
-    // if (dbUser === undefined) {
-    //   throw new Error(`Could not find user with id ${userId}`);
-    // }
-    // session.user = dbUser;
+  async session({ session }: { session: Session }) {
+    const _context = await getUser();
+    const dbUser = userSchema.parse(_context);
+    session.user = dbUser;
     return session;
   },
 };

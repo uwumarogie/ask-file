@@ -5,7 +5,7 @@ import { Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { Badge } from "@/components/ui/badge";
-import { uploadFileAcrossServices } from "@/actions/upload-file-into-services";
+import { uploadFileAcrossServices } from "@/db/relational/functions/files";
 import { createConversationStart } from "@/actions/create-conversation-start";
 import { checkExistingFileName } from "@/actions/exist-file";
 

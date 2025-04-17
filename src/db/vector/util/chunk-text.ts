@@ -1,7 +1,7 @@
 //NOTE: Refactor the entire file after finishing the splitting feature
 
 import * as LangChain from "@langchain/textsplitters";
-import { type Category } from "@/actions/upload-file-into-services";
+import { type Category } from "@/db/relational/functions/files";
 import PDFParse from "pdf-parse2";
 import { getCategorieContext } from "@/util/openai-service/category-service";
 import { structureFormatStringToArray } from "@/util/openai-service/format-service";

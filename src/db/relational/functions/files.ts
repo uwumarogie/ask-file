@@ -2,10 +2,13 @@
 import db from "@/db/relational/connection";
 import { eq, and, desc } from "drizzle-orm";
 import { filesTable } from "@/db/relational/schema/business";
-import { userTable } from "@/db/relational/schema/auth";
 import { getFiletype } from "@/util/file-modification/util";
 import { sanitizeFileName } from "@/util/file-modification/util";
 import { generateUUID } from "@/util/uuid";
+import { getUser } from "./user";
+import { uploadFileToS3 } from "@/util/aws/service-interaction";
+import { uploadFileEmbeddingToPinecone } from "@/db/vector/functions/file";
+import { NextResponse } from "next/server";
 
 export type DocumentCard = {
   id: string;
@@ -20,36 +23,38 @@ type GetFilesResult = {
   response: Array<DocumentCard> | string;
 };
 
+export type Category = "Technical Document" | "News Article";
+
 export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
-  const user = null;
-  if (!user) {
-    throw new Error("User not authenticated");
+  try {
+    const user = await getUser();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    return (
+      (
+        await db
+          .select()
+          .from(filesTable)
+          .where(
+            and(
+              eq(filesTable.fileName, fileName),
+              eq(filesTable.userId, user.id),
+            ),
+          )
+      ).length > 0
+    );
+  } catch (error) {
+    console.error("Error checking file name:", error);
+    return false;
   }
-  console.debug("user", user);
-
-  const dbUser = await db
-    .select()
-    .from(userTable)
-    .where(eq(userTable.id, "tets"));
-
-  return (
-    (
-      await db
-        .select()
-        .from(filesTable)
-        .where(
-          and(
-            eq(filesTable.fileName, fileName),
-            eq(filesTable.userId, dbUser[0].id),
-          ),
-        )
-    ).length > 0
-  );
 }
 
 export async function dbGetFiles(): Promise<GetFilesResult> {
   try {
-    const user = null;
+    const user = await getUser();
+
     if (!user) {
       throw new Error("User not authenticated");
     }
@@ -62,7 +67,7 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
         favorite: filesTable.isFavorite,
       })
       .from(filesTable)
-      .where(eq(filesTable.userId, "test"))
+      .where(eq(filesTable.userId, user.id))
       .orderBy(desc(filesTable.updatedAt));
 
     const anyFilesAvailable = userFiles.length === 0;
@@ -122,5 +127,46 @@ export async function dbCreateFile(
   } catch (error) {
     console.error("Error uploading file to database", error);
     return { success: false, error };
+  }
+}
+
+export async function uploadFileAcrossServices(file: File) {
+  try {
+    const user = await getUser();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    // UPLOAD FILE TO S3
+    const response = await uploadFileToS3(user.id, file);
+    if (!response.success) {
+      throw new Error(response.message);
+    }
+    // UPLOAD FILE TO POSTGRES
+    const uploadResult = await dbCreateFile(file, user.id, response.fileKey);
+    if (!uploadResult.success) {
+      throw new Error("Failed to upload file to the database");
+    }
+    // UPLOAD FILE TO PINECONE
+    await uploadFileEmbeddingToPinecone(
+      file,
+      uploadResult.userId!,
+      uploadResult.fileId!,
+      uploadResult.awsFileKey!,
+    );
+
+    return NextResponse.json({
+      success: true,
+      fileData: {
+        userId: uploadResult.userId!,
+        fileId: uploadResult.fileId!,
+        title: uploadResult.fileName,
+      },
+    });
+  } catch (error) {
+    console.error("Error uploading file across services", error);
+    return NextResponse.json({
+      success: false,
+      error: (error as Error).message,
+    });
   }
 }
