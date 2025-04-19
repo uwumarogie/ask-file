@@ -12,7 +12,7 @@ export function useFileUpload(file: File | null): string | undefined {
     (async () => {
       try {
         // Check duplicate file name
-        const existingRes = await fetch("/api/check-file-existance", {
+        const existingRes = await fetch("/api/check-file-existence", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileName: file.name }),
