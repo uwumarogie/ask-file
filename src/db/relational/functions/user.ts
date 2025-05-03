@@ -1,9 +1,7 @@
 "use server";
 import db from "@/db/relational/connection";
-import { userTable, accountTable } from "@/db/relational/schema/auth";
-import { NextResponse } from "next/server";
-import { eq, and } from "drizzle-orm";
-import { generateUUID } from "@/util/uuid";
+import { userTable } from "@/db/relational/schema/auth";
+import { eq } from "drizzle-orm";
 
 export async function getUser() {
   try {
