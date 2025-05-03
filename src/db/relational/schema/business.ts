@@ -8,18 +8,12 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { userTable } from "@/db/relational/schema/auth";
-const iöwerw = {
-  id: "1",
-  title: "Technical Specification v1.0",
-  fileType: "PDF",
-  createdAt: new Date("2023-10-15"),
-  isFavorite: true,
-};
+import { user } from "@/db/relational/schema/auth";
+
 export const filesTable = pgTable("file", {
   fileId: uuid("file_id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .references(() => userTable.id, { onDelete: "cascade" })
+  userId: text("user_id")
+    .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
   fileName: text("file_name").notNull(),
   filePath: text("file_path").notNull(),
@@ -38,8 +32,8 @@ export const messageTable = pgTable("message", {
   chatId: uuid("chat_id")
     .references(() => conversationTable.conversationId, { onDelete: "cascade" })
     .notNull(),
-  userId: uuid("user_id")
-    .references(() => userTable.id, { onDelete: "cascade" })
+  userId: text("user_id")
+    .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
   messageRole: messageRoleEnum("role").default("user").notNull(),
   content: varchar("content").notNull(),
@@ -51,9 +45,9 @@ export const messageTable = pgTable("message", {
 
 export const conversationTable = pgTable("conversation", {
   conversationId: uuid("conversation_id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   fileId: uuid("file_id")
     .references(() => filesTable.fileId)
     .notNull(),

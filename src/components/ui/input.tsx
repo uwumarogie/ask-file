@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/util/tailwind/cn";
+import { cn } from "@/util/tailwind";
 
 export const Input = React.forwardRef<
   HTMLInputElement,

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, X, Filter } from "lucide-react";
-import { cn } from "@/util/tailwind/cn";
+import { cn } from "@/util/tailwind";
 
 type SearchBarProps = {
   onSearch?: (query: string) => void;
