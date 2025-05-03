@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/util/tailwind/cn";
+import { cn } from "@/util/tailwind";
 import { FileText, Clock, MoreVertical, Star } from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";

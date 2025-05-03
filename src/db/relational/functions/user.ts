@@ -1,21 +1,27 @@
 "use server";
 import db from "@/db/relational/connection";
-import { userTable } from "@/db/relational/schema/auth";
+import { user } from "@/db/relational/schema/auth";
 import { eq } from "drizzle-orm";
+import { auth } from "@/auth";
+import { headers } from "next/headers";
 
 export async function getUser() {
   try {
-    const userInformation = null;
+    const userInformation = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    console.log("userInformation", userInformation);
     if (userInformation == undefined || userInformation == null) {
       throw new Error("User not authenticated");
     }
 
-    const [user] = await db
+    const [user1] = await db
       .select()
-      .from(userTable)
-      .where(eq(userTable.email, userInformation));
+      .from(user)
+      .where(eq(user.email, userInformation.user.email));
 
-    return user;
+    return user1;
   } catch (error) {
     console.error("Error getting user by id", error);
     throw new Error("Error getting user by id");

@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { Upload, File, FileText, X } from "lucide-react";
-import { cn } from "@/util/tailwind/cn";
+import { cn } from "@/util/tailwind";
 import { useToast } from "@/util/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

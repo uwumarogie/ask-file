@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { cn } from "@/util/tailwind/cn";
+import { cn } from "@/util/tailwind";
 import { usePathname } from "next/navigation";
 import {
   FileText,
