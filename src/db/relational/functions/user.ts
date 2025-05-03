@@ -11,6 +11,7 @@ import { auth } from "@/auth";
 export async function getUser() {
   try {
     const userInformation = await auth();
+    console.debug("userInformation", userInformation?.user?.id);
     if (userInformation == undefined || userInformation == null) {
       throw new Error("User not authenticated");
     }

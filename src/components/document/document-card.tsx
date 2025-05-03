@@ -8,7 +8,7 @@ import Link from "next/link";
 export type DocumentCardProps = {
   id: string;
   title: string;
-  fileType: string;
+  fileType?: string;
   createdAt: Date;
   isFavorite?: boolean;
   thumbnailUrl?: string;
@@ -25,7 +25,7 @@ export function DocumentCard({
   className,
 }: DocumentCardProps) {
   const getFileIcon = () => {
-    switch (fileType.toLowerCase()) {
+    switch (fileType?.toLowerCase()) {
       case "pdf":
         return <FileText className="w-8 h-8 text-red-500" />;
       case "doc":

@@ -16,7 +16,7 @@ export default function SignInForm() {
         </form>
         <form
           action={() => {
-            signOut();
+            signIn("google", { redirectTo: "/documents" });
           }}
         >
           <button className="flex items-center justify-center gap-3 border border-black bg-black cursor-pointer text-white p-2 px-3 rounded hover:scale-105 transition">

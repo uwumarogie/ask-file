@@ -2,52 +2,28 @@
 
 import React, { useState } from "react";
 import { SearchBar } from "@/components/document/search-bar";
-import { DocumentCard, DocumentCardProps } from "./document-card";
+import { DocumentCard } from "./document-card";
+import { type DocumentCardType } from "@/db/relational/functions/files";
 import { SlidersHorizontal, Plus, Grid, List, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
-  {
-    id: "1",
-    title: "Technical Specification v1.0",
-    fileType: "PDF",
-    createdAt: new Date("2023-10-15"),
-    isFavorite: true,
-  },
-
-  {
-    id: "2",
-    title: "System Architecture Overview",
-    fileType: "PDF",
-    createdAt: new Date("2023-10-05"),
-    isFavorite: true,
-  },
-  {
-    id: "3",
-    title: "Project Requirements Document",
-    fileType: "PDF",
-    createdAt: new Date("2023-08-20"),
-    isFavorite: false,
-  },
-];
-
-export function Documents() {
+export function Documents({ documents }: { documents: DocumentCardType[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   console.log("searchQuery", searchQuery);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [filteredDocs, setFilteredDocs] = useState(mockDocuments);
+  const [filteredDocs, setFilteredDocs] = useState(documents);
   const router = useRouter();
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
 
     if (!query) {
-      setFilteredDocs(mockDocuments);
+      setFilteredDocs(documents);
       return;
     }
 
-    const filtered = mockDocuments.filter((doc) =>
+    const filtered = documents.filter((doc) =>
       doc.title.toLowerCase().includes(query.toLowerCase()),
     );
 

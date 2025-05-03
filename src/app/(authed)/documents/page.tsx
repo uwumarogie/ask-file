@@ -1,5 +1,6 @@
 import React from "react";
 import { Documents } from "@/components/document";
+import { dbGetFiles } from "@/db/relational/functions/files";
 export type DocumentCardProps = {
   id: string;
   title: string;
@@ -35,5 +36,7 @@ const mockDocuments: Omit<DocumentCardProps, "onClick">[] = [
 ];
 
 export default async function DocumentPage() {
-  return <Documents />;
+  const documents = await dbGetFiles();
+
+  return <Documents documents={documents.response} />;
 }

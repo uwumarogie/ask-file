@@ -4,14 +4,14 @@ import {
   timestamp,
   integer,
   primaryKey,
+  boolean,
   uuid,
 } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
-
 import { type AdapterAccountType } from "@auth/core/adapters";
 
 export const userTable = pgTable("users", {
-  id: uuid("user_id").defaultRandom().primaryKey(),
+  id: uuid("user_id").primaryKey().defaultRandom(),
   name: text("name"),
   email: text("email").unique(),
   emailVerified: timestamp("email_verified", {
@@ -49,5 +49,50 @@ export const accountTable = pgTable(
   ],
 );
 
+export const sessionTable = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
 
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (verificationToken) => [
+    {
+      compositePk: primaryKey({
+        columns: [verificationToken.identifier, verificationToken.token],
+      }),
+    },
+  ],
+);
+
+export const authenticatorsTable = pgTable(
+  "authenticator",
+  {
+    credentialID: text("credentialID").notNull().unique(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => userTable.id, { onDelete: "cascade" }),
+    providerAccountId: text("providerAccountId").notNull(),
+    credentialPublicKey: text("credentialPublicKey").notNull(),
+    counter: integer("counter").notNull(),
+    credentialDeviceType: text("credentialDeviceType").notNull(),
+    credentialBackedUp: boolean("credentialBackedUp").notNull(),
+    transports: text("transports"),
+  },
+  (authenticator) => [
+    {
+      compositePK: primaryKey({
+        columns: [authenticator.userId, authenticator.credentialID],
+      }),
+    },
+  ],
+);
 export const userSchema = createSelectSchema(userTable);

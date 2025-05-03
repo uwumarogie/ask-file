@@ -9,7 +9,13 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { userTable } from "@/db/relational/schema/auth";
-
+const iöwerw = {
+  id: "1",
+  title: "Technical Specification v1.0",
+  fileType: "PDF",
+  createdAt: new Date("2023-10-15"),
+  isFavorite: true,
+};
 export const filesTable = pgTable("file", {
   fileId: uuid("file_id").defaultRandom().primaryKey(),
   userId: uuid("user_id")

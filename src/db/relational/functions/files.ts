@@ -10,7 +10,7 @@ import { uploadFileToS3 } from "@/util/aws/service-interaction";
 import { uploadFileEmbeddingToPinecone } from "@/db/vector/functions/file";
 import { NextResponse } from "next/server";
 
-export type DocumentCard = {
+export type DocumentCardType = {
   id: string;
   title: string;
   fileType: string | undefined;
@@ -20,7 +20,7 @@ export type DocumentCard = {
 
 type GetFilesResult = {
   success: boolean;
-  response: Array<DocumentCard> | string;
+  response: Array<DocumentCardType>;
 };
 
 export type Category = "Technical Document" | "News Article";
@@ -54,6 +54,7 @@ export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
 export async function dbGetFiles(): Promise<GetFilesResult> {
   try {
     const user = await getUser();
+    console.debug("user", user);
 
     if (!user) {
       throw new Error("User not authenticated");
@@ -73,7 +74,7 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
     const anyFilesAvailable = userFiles.length === 0;
 
     if (anyFilesAvailable) {
-      return { success: false, response: "No files found" };
+      return { success: false, response: [] };
     }
     const response = userFiles.map((file) => {
       return {
@@ -93,7 +94,7 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
     console.error("Error fetching files, error", error);
     return {
       success: false,
-      response: "Error fetching files, error",
+      response: [],
     };
   }
 }
