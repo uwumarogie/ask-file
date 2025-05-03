@@ -27,7 +27,6 @@
     "drizzle-zod": "^0.7.1",
     "lucide-react": "0.483.0",
     "next": "15.2.4",
-    "next-auth": "beta",
     "openai": "4.77.0",
     "pdf-parse2": "1.0.4",
     "pg": "8.13.1",
