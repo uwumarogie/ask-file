@@ -4,7 +4,7 @@ import * as LangChain from "@langchain/textsplitters";
 import { type Category } from "@/db/relational/functions/files";
 import { getCategorieContext } from "@/util/openai-service/category-service";
 import { structureFormatStringToArray } from "@/util/openai-service/format-service";
-import PDFParseModule from "pdf-parse2";
+import PdfParseModule from "pdf-parse2";
 type MATHPIX_RESPONSE = {
   version: string;
   text: string;
@@ -107,7 +107,8 @@ async function getInitialTextFromFile(file: File | null, allPages: boolean) {
     throw new Error("No file selected");
   }
   const buffer = await file.arrayBuffer();
-  const parser = new PDFParseModule();
+  const PDFParse = PdfParseModule;
+  const parser = new PDFParse();
   const data = allPages
     ? await parser.loadPDF(buffer)
     : await parser.loadPDF(buffer, { maxPages: 1 });

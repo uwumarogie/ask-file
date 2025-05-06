@@ -1,5 +1,3 @@
-
-
 TODO improvement:
 [] connect it the route to the chat route
 [] add the data from the user to the document sidebar
