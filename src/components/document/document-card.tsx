@@ -15,6 +15,25 @@ export type DocumentCardProps = {
   className?: string;
 };
 
+function getFileIcon(fileType: string | undefined) {
+  if (!fileType) {
+    return <FileText className="w-8 h-8 text-gray-500" />;
+  }
+  if (fileType.toLowerCase() === "pdf") {
+    return <FileText className="w-8 h-8 text-red-500" />;
+  }
+
+  if (fileType.toLowerCase() === "doc" || fileType.toLowerCase() === "docx") {
+    return <FileText className="w-8 h-8 text-blue-500" />;
+  }
+
+  if (fileType.toLowerCase() === "md") {
+    return <FileText className="w-8 h-8 text-green-500" />;
+  }
+
+  return <FileText className="w-8 h-8 text-gray-500" />;
+}
+
 export function DocumentCard({
   id,
   title,
@@ -24,20 +43,6 @@ export function DocumentCard({
   thumbnailUrl,
   className,
 }: DocumentCardProps) {
-  const getFileIcon = () => {
-    switch (fileType?.toLowerCase()) {
-      case "pdf":
-        return <FileText className="w-8 h-8 text-red-500" />;
-      case "doc":
-      case "docx":
-        return <FileText className="w-8 h-8 text-blue-500" />;
-      case "md":
-        return <FileText className="w-8 h-8 text-green-500" />;
-      default:
-        return <FileText className="w-8 h-8 text-gray-500" />;
-    }
-  };
-
   return (
     <Link
       className={cn(
@@ -69,11 +74,10 @@ export function DocumentCard({
           />
         ) : (
           <div className="flex items-center justify-center w-full h-full bg-accent/50">
-            {getFileIcon()}
+            {getFileIcon(fileType)}
           </div>
         )}
       </div>
-
       <div className="flex flex-col p-4 flex-grow">
         <h3 className="font-medium text-sm line-clamp-2 mb-2">{title}</h3>
 

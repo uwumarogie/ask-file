@@ -5,7 +5,6 @@ import { Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { Badge } from "@/components/ui/badge";
-import { useFileUpload } from "@/util/hooks/use-file-upload";
 
 export function DocumentUpload() {
   return (
@@ -33,7 +32,7 @@ export function DocumentUpload() {
           </p>
 
           <div className="mt-6">
-            <FileUploadZone onFileUploaded={useFileUpload} />
+            <FileUploadZone />
           </div>
           <div className="mt-8 bg-muted/40 rounded-lg p-4">
             <h3 className="text-sm font-medium mb-2">Supported file types:</h3>

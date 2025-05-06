@@ -43,7 +43,7 @@ export function DocumentSidebar() {
     <div
       className={cn(
         "h-screen fixed left-0 top-0 z-40 flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ease-in-out",
-        collapsed ? "w-16" : "w-52",
+        collapsed ? "w-16" : "w-56",
       )}
     >
       <div className="flex items-center p-4 h-16 border-b border-sidebar-border">
@@ -90,7 +90,7 @@ export function DocumentSidebar() {
       <div className="p-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-            {true ? <div>öruwerowno</div> : <>U</>}{" "}
+            {false ? <div>öruwerowno</div> : <>U</>}{" "}
           </div>
           {!collapsed && (
             <div className="flex flex-col">
