@@ -1,7 +1,7 @@
 
 
 TODO improvement:
-[] connect it the route to the chat route
+[ ] connect it the route to the chat route
 [] add the data from the user to the document sidebar
 [] make the app responsive
 [] when uplading from the landing page, then choose if where the user is going to be redirect (solve it with the route)
