@@ -1,9 +1,6 @@
-"use client";
 import { authClient } from "@/auth/client";
-import { useRouter } from "next/navigation";
-
+import { redirect } from "next/navigation";
 export default function Page() {
-  const router = useRouter();
   return (
     <div className="flex flex-col items-center">
       <button onClick={() => console.log("Sign out")}>
@@ -15,7 +12,7 @@ export default function Page() {
           await authClient.signOut({
             fetchOptions: {
               onSuccess: () => {
-                router.push("/");
+                redirect("/");
               },
             },
           });

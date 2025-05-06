@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, FileText, MessageSquare, Search } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/landing-page/footer";
+import { useSession } from "@/auth/client";
 function LandingPageNavbar() {
   const router = useRouter();
+  const session = useSession();
   const navItems = [
     {
       slug: "/#features",
@@ -40,11 +42,18 @@ function LandingPageNavbar() {
               {text}
             </Link>
           ))}
-        </nav>
-        <Button variant="outline" onClick={() => router.push("/login")}>
-          Dashboard
-          <ArrowRight className="ml-2 w-4 h-4" />
-        </Button>
+        </nav>{" "}
+        {session.data ? (
+          <Button variant="outline" onClick={() => router.push("/documents")}>
+            Dashboard
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        ) : (
+          <Button variant="outline" onClick={() => router.push("/sign-in")}>
+            Sign Up
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        )}
       </div>
     </header>
   );
@@ -53,14 +62,6 @@ function LandingPageNavbar() {
 export function Index() {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
-
-  const handleFilesUploaded = () => {
-    setIsUploading(true);
-    setTimeout(() => {
-      setIsUploading(false);
-      return true ? router.push("/documents") : router.push("/login");
-    }, 3000);
-  };
 
   const features = [
     {
@@ -101,7 +102,7 @@ export function Index() {
           </p>
 
           <div className="max-w-2xl mx-auto glass rounded-2xl p-8 shadow-elevated">
-            <FileUploadZone onFileUploaded={handleFilesUploaded} />
+            <FileUploadZone />
           </div>
 
           {isUploading && (

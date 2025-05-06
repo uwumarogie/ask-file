@@ -2,10 +2,9 @@
 
 import * as LangChain from "@langchain/textsplitters";
 import { type Category } from "@/db/relational/functions/files";
-// Note: PDFParse will be dynamically imported to enable server-side execution without workerSrc errors
 import { getCategorieContext } from "@/util/openai-service/category-service";
 import { structureFormatStringToArray } from "@/util/openai-service/format-service";
-
+import PDFParseModule from "pdf-parse2";
 type MATHPIX_RESPONSE = {
   version: string;
   text: string;
@@ -108,18 +107,10 @@ async function getInitialTextFromFile(file: File | null, allPages: boolean) {
     throw new Error("No file selected");
   }
   const buffer = await file.arrayBuffer();
-  // Override GlobalWorkerOptions.workerSrc to prevent type errors on server-side
-  const pdfjs = await import("pdfjs-dist");
-  Object.defineProperty(pdfjs.GlobalWorkerOptions, "workerSrc", {
-    set: (_val: string) => {},
-    get: (): string => "",
-  });
-  // Dynamically import PDFParse after overriding workerSrc
-  const PDFParseModule = await import("pdf-parse2");
-  const PDFParser = new PDFParseModule.default();
+  const parser = new PDFParseModule();
   const data = allPages
-    ? await PDFParser.loadPDF(buffer)
-    : await PDFParser.loadPDF(buffer, { maxPages: 1 });
+    ? await parser.loadPDF(buffer)
+    : await parser.loadPDF(buffer, { maxPages: 1 });
   if (!data?.text) {
     throw new Error("No text in the pdf");
   }

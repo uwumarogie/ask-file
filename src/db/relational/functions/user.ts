@@ -7,21 +7,20 @@ import { headers } from "next/headers";
 
 export async function getUser() {
   try {
-    const userInformation = await auth.api.getSession({
+    const authUser = await auth.api.getSession({
       headers: await headers(),
     });
 
-    console.log("userInformation", userInformation);
-    if (userInformation == undefined || userInformation == null) {
+    if (authUser == undefined || authUser == null) {
       throw new Error("User not authenticated");
     }
 
-    const [user1] = await db
+    const [userInformation] = await db
       .select()
       .from(user)
-      .where(eq(user.email, userInformation.user.email));
+      .where(eq(user.email, authUser.user.email));
 
-    return user1;
+    return userInformation;
   } catch (error) {
     console.error("Error getting user by id", error);
     throw new Error("Error getting user by id");

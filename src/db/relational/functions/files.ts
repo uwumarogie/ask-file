@@ -9,6 +9,7 @@ import { getUser } from "./user";
 import { uploadFileToS3 } from "@/util/aws/service-interaction";
 import { uploadFileEmbeddingToPinecone } from "@/db/vector/functions/file";
 import { NextResponse } from "next/server";
+import { postConversationStart } from "./chat";
 
 export type DocumentCardType = {
   id: string;
@@ -54,8 +55,6 @@ export async function dbCheckExistingFile(fileName: string): Promise<boolean> {
 export async function dbGetFiles(): Promise<GetFilesResult> {
   try {
     const user = await getUser();
-    console.debug("user", user);
-
     if (!user) {
       throw new Error("User not authenticated");
     }
@@ -142,11 +141,13 @@ export async function uploadFileAcrossServices(file: File) {
     if (!response.success) {
       throw new Error(response.message);
     }
+
     // UPLOAD FILE TO POSTGRES
     const uploadResult = await dbCreateFile(file, user.id, response.fileKey);
     if (!uploadResult.success) {
       throw new Error("Failed to upload file to the database");
     }
+
     // UPLOAD FILE TO PINECONE
     await uploadFileEmbeddingToPinecone(
       file,
@@ -168,5 +169,69 @@ export async function uploadFileAcrossServices(file: File) {
       success: false,
       error: (error as Error).message,
     });
+  }
+}
+
+export async function uploadFile(
+  file: File | null,
+): Promise<string | undefined> {
+  if (!file) return;
+
+  try {
+    const exists = await dbCheckExistingFile(file.name);
+    if (exists) {
+      throw new Error("File already exists");
+    }
+
+    const uploadCtx = await uploadFileAcrossServices(file);
+    const uploadJson = await uploadCtx.json();
+    if (!uploadJson?.success || !uploadJson.fileData) {
+      throw new Error("Failed to upload file");
+    }
+
+    const { fileId, title } = uploadJson.fileData;
+    const conversationResponse = await postConversationStart(fileId, title);
+    if (!conversationResponse.success) {
+      throw new Error(
+        `Failed to initialize chat entry: ${conversationResponse.error}`,
+      );
+    }
+
+    return conversationResponse.conversationId;
+  } catch (error: any) {
+    console.error("Error uploading file:", error);
+    throw new Error("Upload Error");
+  }
+}
+
+export async function dbDeleteFile(sanitizedFileName: string) {
+  try {
+    const user = await getUser();
+    const existingFiles = await db
+      .select()
+      .from(filesTable)
+      .where(
+        and(
+          eq(filesTable.fileName, sanitizedFileName),
+          eq(filesTable.userId, user.id),
+        ),
+      );
+
+    if (existingFiles.length === 0) {
+      throw new Error("File does not exist");
+    }
+
+    await db
+      .delete(filesTable)
+      .where(
+        and(
+          eq(filesTable.fileName, sanitizedFileName),
+          eq(filesTable.userId, user.id),
+        ),
+      );
+    return { success: true, fileId: existingFiles[0].fileId };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: (error as Error).message };
   }
 }

@@ -10,7 +10,6 @@ export default function Page() {
   const session = useSession();
 
   if (session.data !== null) {
-    console.log("session.data?.user !== null");
     redirect("/documents");
   }
 
@@ -37,4 +36,3 @@ export default function Page() {
     </div>
   );
 }
-

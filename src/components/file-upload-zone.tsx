@@ -3,25 +3,22 @@
 import React, { useState, useCallback } from "react";
 import { Upload, File, FileText, X } from "lucide-react";
 import { cn } from "@/util/tailwind";
-import { useToast } from "@/util/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { uploadFile } from "@/db/relational/functions/files";
 
 type FileUploadZoneProps = {
-  onFileUploaded?: (file: File | null) => string | undefined | void;
   accept?: string;
   maxSize?: number;
 };
 
 export function FileUploadZone({
-  onFileUploaded,
   accept = ".pdf",
   maxSize = 10, // Default 10MB
 }: FileUploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const { toast } = useToast();
   const router = useRouter();
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -36,36 +33,19 @@ export function FileUploadZone({
 
   const validateFile = useCallback(
     (file: File) => {
-      // Check file size (convert maxSize from MB to bytes)
       if (file.size > maxSize * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: `${file.name} exceeds the maximum size of ${maxSize}MB`,
-          variant: "destructive",
-        });
-        return false;
+        throw new Error(
+          `${file.name} exceeds the maximum size of ${maxSize}MB`,
+        );
       }
-
-      // Check file type based on accept prop
       const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
       const acceptedTypes = accept.split(",");
 
-      if (
-        !acceptedTypes.some(
-          (type) => type === fileExtension || type === file.type,
-        )
-      ) {
-        toast({
-          title: "Unsupported file format",
-          description: `${file.name} is not a supported document type`,
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      return true;
+      return acceptedTypes.some(
+        (type) => type === fileExtension || type === file.type,
+      );
     },
-    [accept, maxSize, toast],
+    [accept, maxSize],
   );
 
   const processFile = useCallback(
@@ -73,20 +53,12 @@ export function FileUploadZone({
       if (fileList.length === 0) return;
       const selectedFile = fileList[0];
 
-      if (validateFile(selectedFile)) {
+      const isValidFile = validateFile(selectedFile);
+      if (isValidFile) {
         setFile(selectedFile);
-
-        if (onFileUploaded) {
-          onFileUploaded(selectedFile);
-        }
-
-        toast({
-          title: "File uploaded",
-          description: `${selectedFile.name} successfully uploaded`,
-        });
       }
     },
-    [onFileUploaded, toast, validateFile],
+    [validateFile],
   );
 
   const handleDrop = useCallback(
@@ -109,9 +81,6 @@ export function FileUploadZone({
 
   const removeFile = () => {
     setFile(null);
-    if (onFileUploaded) {
-      onFileUploaded(null);
-    }
   };
 
   const getFileIcon = (fileName: string) => {
@@ -203,10 +172,8 @@ export function FileUploadZone({
               className="w-full sm:w-auto"
               disabled={!file}
               onClick={async () => {
-                if (onFileUploaded) {
-                  const chatId = await onFileUploaded(file);
-                  router.push(`/documents/chat/${chatId}`);
-                }
+                const chatId = await uploadFile(file);
+                router.push(`/documents/chat/${chatId}`);
               }}
             >
               <Upload className="mr-2 h-4 w-4" />

@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 
 export function Documents({ documents }: { documents: DocumentCardType[] }) {
   const [searchQuery, setSearchQuery] = useState("");
-  console.log("searchQuery", searchQuery);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filteredDocs, setFilteredDocs] = useState(documents);
   const router = useRouter();
