@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { SearchBar } from "@/components/document/search-bar";
-import { DocumentCard } from "./document-card";
+import { DocumentCard } from "./card";
 import { type DocumentCardType } from "@/db/relational/functions/files";
 import { SlidersHorizontal, Plus, Grid, List, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export function Documents({ documents }: { documents: DocumentCardType[] }) {
   };
 
   return (
-    <div className="container mx-auto py-8 max-w-7xl">
+    <div className="container overflow-hidden py-8 max-w-7xl">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-medium">Documents</h1>

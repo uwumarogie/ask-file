@@ -1,3 +1,5 @@
+"use client";  
+
 import { authClient } from "@/auth/client";
 import { redirect } from "next/navigation";
 export default function Page() {
