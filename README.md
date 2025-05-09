@@ -4,7 +4,6 @@ TODO improvement:
 [] make the app responsive
 [] when uplading from the landing page, then choose if where the user is going to be redirect (solve it with the route)
 [] add toast notification and error handling using react-toastify
-[] add a loading spinner when uploading the file
 [] make the uploading faster and more efficient
 [] add the deployment link to github
 [] improve the UI/UX

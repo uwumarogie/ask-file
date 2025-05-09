@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { uploadFile } from "@/db/relational/functions/files";
+import { LoadingIcon } from "./ui/spinner";
 
 type FileUploadZoneProps = {
   accept?: string;
@@ -19,6 +20,7 @@ export function FileUploadZone({
 }: FileUploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -40,7 +42,6 @@ export function FileUploadZone({
       }
       const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
       const acceptedTypes = accept.split(",");
-
       return acceptedTypes.some(
         (type) => type === fileExtension || type === file.type,
       );
@@ -172,11 +173,16 @@ export function FileUploadZone({
               className="w-full sm:w-auto"
               disabled={!file}
               onClick={async () => {
+                setIsLoading(true);
                 const chatId = await uploadFile(file);
                 router.push(`/documents/chat/${chatId}`);
               }}
             >
-              <Upload className="mr-2 h-4 w-4" />
+              {isLoading ? (
+                <LoadingIcon />
+              ) : (
+                <Upload className="mr-2 h-4 w-4" />
+              )}
               Process Document
             </Button>
           </div>

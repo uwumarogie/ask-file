@@ -7,7 +7,7 @@ import { sanitizeFileName } from "@/util/file-modification/util";
 import { generateUUID } from "@/util/uuid";
 import { getUser } from "./user";
 import { uploadFileToS3 } from "@/util/aws/service-interaction";
-import { uploadFileEmbeddingToPinecone } from "@/db/vector/functions/file";
+// Removed static import of uploadFileEmbeddingToPinecone to avoid bundling browser-specific code in server components
 import { NextResponse } from "next/server";
 import { postConversationStart } from "./chat";
 
@@ -148,13 +148,18 @@ export async function uploadFileAcrossServices(file: File) {
       throw new Error("Failed to upload file to the database");
     }
 
-    // UPLOAD FILE TO PINECONE
-    await uploadFileEmbeddingToPinecone(
-      file,
-      uploadResult.userId!,
-      uploadResult.fileId!,
-      uploadResult.awsFileKey!,
-    );
+    // UPLOAD FILE TO PINECONE (dynamic import to avoid bundling browser-specific code)
+    {
+      const { uploadFileEmbeddingToPinecone } = await import(
+        "@/db/vector/functions/file"
+      );
+      await uploadFileEmbeddingToPinecone(
+        file,
+        uploadResult.userId!,
+        uploadResult.fileId!,
+        uploadResult.awsFileKey!,
+      );
+    }
 
     return NextResponse.json({
       success: true,

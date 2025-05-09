@@ -68,9 +68,9 @@ importers:
       openai:
         specifier: 4.77.0
         version: 4.77.0(encoding@0.1.13)(zod@3.22.4)
-      pdf-parse2:
-        specifier: 1.0.4
-        version: 1.0.4
+      pdfjs-dist:
+        specifier: 5.2.133
+        version: 5.2.133
       pg:
         specifier: 8.13.1
         version: 8.13.1
@@ -2566,13 +2566,9 @@ packages:
     resolution: {integrity: sha512-TdrF7fW9Rphjq4RjrW0Kp2AW0Ahwu9sRGTkS6bvDi0SCwZlEZYmcfDbEsTz8RVk0EHIS/Vd1bv3JhG+1xZuAyQ==}
     engines: {node: '>=16'}
 
-  pdf-parse2@1.0.4:
-    resolution: {integrity: sha512-LS1xqhbWfZ2npDTSkfGKoY4AAY1tRU8RVKKcSf+SkMM+g2uq1prBxHJnpw5dQdLmE0ivHpfDENjqEvyxNW/g4Q==}
-    engines: {node: '>=14'}
-
-  pdfjs-dist@4.10.38:
-    resolution: {integrity: sha512-/Y3fcFrXEAsMjJXeL9J8+ZG9U01LbuWaYypvDW2ycW1jL269L3js3DVBjDJ0Up9Np1uqDXsDrRihHANhZOlwdQ==}
-    engines: {node: '>=20'}
+  pdfjs-dist@5.2.133:
+    resolution: {integrity: sha512-abE6ZWDxztt+gGFzfm4bX2ggfxUk9wsDEoFzIJm9LozaY3JdXR7jyLK4Bjs+XLXplCduuWS1wGhPC4tgTn/kzg==}
+    engines: {node: '>=20.16.0 || >=22.3.0'}
 
   pg-cloudflare@1.1.1:
     resolution: {integrity: sha512-xWPagP/4B6BgFO+EKz3JONXv3YDgvkbVrGw2mTo3D6tVDQRh1e7cqVGvyR3BE+eQgAvx1XhW/iEASj4/jCWl3Q==}
@@ -5795,11 +5791,7 @@ snapshots:
 
   path-to-regexp@8.2.0: {}
 
-  pdf-parse2@1.0.4:
-    dependencies:
-      pdfjs-dist: 4.10.38
-
-  pdfjs-dist@4.10.38:
+  pdfjs-dist@5.2.133:
     optionalDependencies:
       '@napi-rs/canvas': 0.1.69
 

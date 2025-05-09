@@ -31,7 +31,7 @@
     "lucide-react": "0.483.0",
     "next": "15.2.4",
     "openai": "4.77.0",
-    "pdf-parse2": "1.0.4",
+    "pdfjs-dist": "5.2.133",
     "pg": "8.13.1",
     "postgres": "3.4.5",
     "react": "19.1.0",

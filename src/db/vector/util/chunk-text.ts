@@ -4,7 +4,40 @@ import * as LangChain from "@langchain/textsplitters";
 import { type Category } from "@/db/relational/functions/files";
 import { getCategorieContext } from "@/util/openai-service/category-service";
 import { structureFormatStringToArray } from "@/util/openai-service/format-service";
-import PdfParse from "pdf-parse2";
+// PDF.js will be dynamically imported when needed in browser contexts
+
+function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
+  return new Promise<ArrayBuffer>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error);
+    reader.onload = () => resolve(reader.result as ArrayBuffer);
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+async function extractTextFromPdf(
+  data: ArrayBuffer,
+  readEntireDocument: boolean,
+): Promise<string> {
+  // Dynamically load PDF.js to extract text in browser environment
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  pdfjs.GlobalWorkerOptions.workerSrc =
+    "https://unpkg.com/pdfjs-dist@5.2.133/build/pdf.worker.min.mjs";
+  const pdf = await pdfjs.getDocument({ data }).promise;
+  const ONE_PAGE = 1;
+  const numPages = readEntireDocument ? pdf.numPages : ONE_PAGE;
+  const pageTexts: string[] = [];
+
+  for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+    const page: any = await pdf.getPage(pageNumber);
+    const { items } = await page.getTextContent();
+    const pageStr = items.map((item: any) => item.str).join(" ");
+    pageTexts.push(pageStr);
+  }
+
+  return pageTexts.join("\n\n");
+}
+
 type MATHPIX_RESPONSE = {
   version: string;
   text: string;
@@ -102,26 +135,30 @@ function findCategory(text: string | null): Category {
   return technicalIndex !== -1 ? "Technical Document" : "News Article";
 }
 
-async function getInitialTextFromFile(file: File | null, allPages: boolean) {
+async function getInitialTextFromFile(
+  file: File | null,
+  readEntireDocument: boolean,
+) {
   if (!file) {
     throw new Error("No file selected");
   }
-  const buffer = await file.arrayBuffer();
-  const parser = new PdfParse();
-  const data = allPages
-    ? await parser.loadPDF(buffer)
-    : await parser.loadPDF(buffer, { maxPages: 1 });
-  if (!data?.text) {
-    throw new Error("No text in the pdf");
-  }
-  return data.text;
+  const buffer = await readFileAsArrayBuffer(file);
+  const text = await extractTextFromPdf(buffer, readEntireDocument);
+  console.log(text);
+  console.debug(text);
+  return text;
 }
 
 export async function getChunkedTextFromFile(
   file: File | null,
   fileKey: string,
 ) {
+  if (typeof window === "undefined") {
+    const latex = await extractLaTeXFromFile(fileKey);
+    return latex.map((item) => item.text);
+  }
   const contextText = await getInitialTextFromFile(file, false);
+  console.debug(contextText);
   const textCategory = await getCategorieContext(contextText);
   const category = findCategory(textCategory.responseText);
   return chunkText(category, file, fileKey);
