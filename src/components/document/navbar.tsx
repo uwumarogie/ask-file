@@ -33,7 +33,7 @@ const menuItems = [
 export function DocumentNavbar() {
   const [collapsed, setCollapsed] = useState(false);
 
-  const toggleSidebar = () => {
+  const toggleNavbar = () => {
     setCollapsed((prev) => !prev);
   };
 
@@ -53,7 +53,7 @@ export function DocumentNavbar() {
       </header>
       {collapsed && (
         <div
-          onClick={toggleSidebar}
+          onClick={toggleNavbar}
           className="fixed inset-0 bg-black bg-opacity-50 z-30"
         />
       )}
@@ -70,7 +70,7 @@ export function DocumentNavbar() {
             <span className="font-semibold text-lg">DocuMind</span>
           </Link>
           <button
-            onClick={toggleSidebar}
+            onClick={toggleNavbar}
             className="ml-auto rounded-full hover:bg-sidebar-accent/10"
           >
             <ChevronDown className="w-5 h-5" />
@@ -83,7 +83,7 @@ export function DocumentNavbar() {
               <NavItem
                 key={item.path}
                 item={item}
-                toggleSidebar={toggleSidebar}
+                toggleNavbar={toggleNavbar}
               />
             ))}
           </ul>
