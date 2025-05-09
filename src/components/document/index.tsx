@@ -30,7 +30,7 @@ export function Documents({ documents }: { documents: DocumentCardType[] }) {
   };
 
   return (
-    <div className="container overflow-hidden py-8 max-w-7xl">
+    <div className="container overflow-hidden py-8 max-w-screen-2xl">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-medium">Documents</h1>

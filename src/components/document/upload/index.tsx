@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 export function DocumentUpload() {
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
+
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-semibold">Upload Documents</h1>

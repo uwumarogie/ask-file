@@ -4,7 +4,7 @@ import { authClient } from "@/auth/client";
 import { redirect } from "next/navigation";
 export default function Page() {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center max-w-screen-2xl">
       <button onClick={() => console.log("Sign out")}>
         öuwnriownriäöwnrwirnwäirnwiränwi
       </button>
