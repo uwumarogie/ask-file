@@ -30,7 +30,7 @@ function LandingPageNavbar() {
       <div className="container flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileText className="w-6 h-6 text-primary" />
-          <span className="font-semibold text-xl">DocuMind</span>
+          <span className="font-semibold text-xl">AskFile</span>
         </div>
         <nav className="hidden md:flex items-center space-x-8">
           {navItems.map(({ slug, text }) => (

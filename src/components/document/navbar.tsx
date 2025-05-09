@@ -42,7 +42,7 @@ export function DocumentNavbar() {
       <header className="flex items-center justify-between p-4 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
         <Link href="/" className="flex items-center gap-2">
           <FolderOpen className="w-6 h-6 text-primary" />
-          <span className="font-semibold text-lg">DocuMind</span>
+          <span className="font-semibold text-lg">AskFile</span>
         </Link>
         <button
           onClick={toggleNavbar}
@@ -67,7 +67,7 @@ export function DocumentNavbar() {
         <div className="flex flex-row items-center w-full p-3 h-16 border-b border-sidebar-border">
           <Link href="/" className="flex flex-row items-center gap-2 ">
             <FolderOpen className="w-6 h-6 text-primary" />
-            <span className="font-semibold text-lg">DocuMind</span>
+            <span className="font-semibold text-lg">AskFile</span>
           </Link>
           <button
             onClick={toggleNavbar}
