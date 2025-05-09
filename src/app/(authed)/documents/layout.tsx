@@ -1,5 +1,5 @@
 import React from "react";
-import { DocumentSidebar } from "@/components/document/document-sidebar";
+import { DocumentNavbar } from "@/components/document/sidebar";
 export const dynamic = "force-dynamic";
 
 export default async function DocumentLayout({
@@ -9,7 +9,7 @@ export default async function DocumentLayout({
 }) {
   return (
     <React.Fragment>
-      <DocumentSidebar />
+      <DocumentNavbar />
       {children}
     </React.Fragment>
   );

@@ -75,7 +75,7 @@ export function Chat() {
   };
 
   return (
-    <div className="container max-w-6xl mx-auto h-[calc(100vh-4rem)] flex flex-col pt-6 pb-6">
+    <div className="container max-w-6xl overflow-hidden h-[calc(100vh-4rem)] flex flex-col pt-6 pb-6">
       <div className="mb-6">
         <h1 className="text-3xl font-medium mb-1">Chat with Your Documents</h1>
         <p className="text-muted-foreground">
