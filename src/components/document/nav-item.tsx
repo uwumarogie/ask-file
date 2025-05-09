@@ -10,10 +10,10 @@ type NavItem = {
 
 export function NavItem({
   item,
-  toggleSidebar,
+  toggleNavbar,
 }: {
   item: NavItem;
-  toggleSidebar: () => void;
+  toggleNavbar: () => void;
 }) {
   const location = usePathname();
   return (
@@ -26,7 +26,7 @@ export function NavItem({
             ? "bg-primary text-primary-foreground hover:bg-primary/90"
             : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
         )}
-        onClick={toggleSidebar}
+        onClick={toggleNavbar}
       >
         {item.icon}
         <span>{item.label}</span>

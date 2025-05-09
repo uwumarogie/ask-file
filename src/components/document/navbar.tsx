@@ -45,7 +45,7 @@ export function DocumentNavbar() {
           <span className="font-semibold text-lg">DocuMind</span>
         </Link>
         <button
-          onClick={toggleSidebar}
+          onClick={toggleNavbar}
           className="p-1 rounded-md hover:bg-sidebar-accent/10"
         >
           <Menu className="w-6 h-6" />
