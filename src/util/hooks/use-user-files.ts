@@ -16,7 +16,7 @@ export function useUserFile() {
     const response = await _context.json();
 
     if (response.success) {
-      setFiles(response.response);
+      setFiles(response.files);
       return;
     } else {
       setFiles([]);

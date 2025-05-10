@@ -14,8 +14,8 @@ const initialMessages = [
   },
 ];
 
-export function Chat({chatId}: {chatId: string}) {
-	console.log(chatId);
+export function Chat({ chatId }: { chatId: string }) {
+  console.log(chatId);
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -39,10 +39,7 @@ export function Chat({chatId}: {chatId: string}) {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-
-    // Simulate AI response
     setIsTyping(true);
-
     setTimeout(() => {
       const aiResponse = {
         id: (Date.now() + 1).toString(),
@@ -56,7 +53,6 @@ export function Chat({chatId}: {chatId: string}) {
     }, 1500);
   };
 
-  // Mock AI response logic
   const getAIResponse = (userInput: string) => {
     const input = userInput.toLowerCase();
 

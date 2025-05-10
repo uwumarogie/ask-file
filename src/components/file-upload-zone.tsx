@@ -14,6 +14,15 @@ type FileUploadZoneProps = {
   maxSize?: number;
 };
 
+const getFileIcon = (fileName: string) => {
+  const extension = fileName.split(".").pop()?.toLowerCase();
+  if (extension === "pdf") {
+    return <FileText className="w-8 h-8 text-red-500" />;
+  } else {
+    return <File className="w-8 h-8 text-gray-500" />;
+  }
+};
+
 export function FileUploadZone({
   accept = ".pdf",
   maxSize = 10, // Default 10MB
@@ -77,19 +86,6 @@ export function FileUploadZone({
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       processFile(e.target.files);
-    }
-  };
-
-  const removeFile = () => {
-    setFile(null);
-  };
-
-  const getFileIcon = (fileName: string) => {
-    const extension = fileName.split(".").pop()?.toLowerCase();
-    if (extension === "pdf") {
-      return <FileText className="w-8 h-8 text-red-500" />;
-    } else {
-      return <File className="w-8 h-8 text-gray-500" />;
     }
   };
 
@@ -160,7 +156,7 @@ export function FileUploadZone({
             <Button
               variant="ghost"
               size="icon"
-              onClick={removeFile}
+              onClick={() => setFile(null)}
               className="text-muted-foreground hover:text-destructive"
               aria-label="Remove file"
             >

@@ -7,7 +7,6 @@ import { sanitizeFileName } from "@/util/file-modification/util";
 import { generateUUID } from "@/util/uuid";
 import { getUser } from "./user";
 import { uploadFileToS3 } from "@/util/aws/service-interaction";
-// Removed static import of uploadFileEmbeddingToPinecone to avoid bundling browser-specific code in server components
 import { NextResponse } from "next/server";
 import { postConversationStart } from "./chat";
 

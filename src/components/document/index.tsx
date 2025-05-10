@@ -9,23 +9,20 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export function Documents({ documents }: { documents: DocumentCardType[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [_, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filteredDocs, setFilteredDocs] = useState(documents);
   const router = useRouter();
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-
     if (!query) {
       setFilteredDocs(documents);
       return;
     }
-
     const filtered = documents.filter((doc) =>
       doc.title.toLowerCase().includes(query.toLowerCase()),
     );
-
     setFilteredDocs(filtered);
   };
 
