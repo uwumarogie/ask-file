@@ -4,20 +4,26 @@ import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { useSession } from "@/auth/client";
+
+const navItems = [
+  {
+    slug: "/#features",
+    text: "Features",
+  },
+  {
+    slug: "/docs",
+    text: "Documentation",
+  },
+  {
+    slug: "/support",
+    text: "Support",
+  },
+];
 
 export function LandingPageNavbar() {
   const router = useRouter();
-
-  const navItems = [
-    {
-      slug: "/docs",
-      text: "Documentation",
-    },
-    {
-      slug: "/support",
-      text: "Support",
-    },
-  ];
+  const session = useSession();
 
   return (
     <header className="w-full py-6 border-b border-border">
@@ -36,15 +42,15 @@ export function LandingPageNavbar() {
               {text}
             </Link>
           ))}
-        </nav>
-        {false ? (
+        </nav>{" "}
+        {session.data ? (
           <Button variant="outline" onClick={() => router.push("/documents")}>
             Dashboard
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         ) : (
-          <Button variant="outline" onClick={() => router.push("/login")}>
-            Login
+          <Button variant="outline" onClick={() => router.push("/sign-in")}>
+            Sign Up
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         )}

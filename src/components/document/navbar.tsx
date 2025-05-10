@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { cn } from "@/util/tailwind";
 import {
   FileText,
-  MessageSquare,
   Settings,
   ChevronDown,
   FolderOpen,
@@ -17,11 +16,6 @@ const menuItems = [
     icon: <FileText className="w-5 h-5" />,
     label: "Documents",
     path: "/documents",
-  },
-  {
-    icon: <MessageSquare className="w-5 h-5" />,
-    label: "Chat",
-    path: "/documents/chat",
   },
   {
     icon: <Settings className="w-5 h-5" />,

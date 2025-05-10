@@ -1,88 +1,33 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { FileUploadZone } from "@/components/file-upload-zone";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, MessageSquare, Search } from "lucide-react";
-import Link from "next/link";
+import { FileText, MessageSquare, Search } from "lucide-react";
 import { Footer } from "@/components/landing-page/footer";
-import { useSession } from "@/auth/client";
-function LandingPageNavbar() {
-  const router = useRouter();
-  const session = useSession();
-  const navItems = [
-    {
-      slug: "/#features",
-      text: "Features",
-    },
-    {
-      slug: "/docs",
-      text: "Documentation",
-    },
-    {
-      slug: "/support",
-      text: "Support",
-    },
-  ];
+import { LandingPageNavbar } from "./navbar";
 
-  return (
-    <header className="w-full py-6 border-b border-border">
-      <div className="container flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FileText className="w-6 h-6 text-primary" />
-          <span className="font-semibold text-xl">AskFile</span>
-        </div>
-        <nav className="hidden md:flex items-center space-x-8">
-          {navItems.map(({ slug, text }) => (
-            <Link
-              key={text}
-              href={slug}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {text}
-            </Link>
-          ))}
-        </nav>{" "}
-        {session.data ? (
-          <Button variant="outline" onClick={() => router.push("/documents")}>
-            Dashboard
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-        ) : (
-          <Button variant="outline" onClick={() => router.push("/sign-in")}>
-            Sign Up
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-        )}
-      </div>
-    </header>
-  );
-}
+const features = [
+  {
+    icon: <FileText className="w-10 h-10 text-primary" />,
+    title: "Document Management",
+    description:
+      "Upload, organize, and access your technical documents in one secure location.",
+  },
+  {
+    icon: <Search className="w-10 h-10 text-primary" />,
+    title: "Intelligent Search",
+    description:
+      "Find exactly what you need with our advanced semantic search capabilities.",
+  },
+  {
+    icon: <MessageSquare className="w-10 h-10 text-primary" />,
+    title: "AI-Powered Chat",
+    description:
+      "Ask questions and get answers directly from your technical documentation.",
+  },
+];
 
 export function Index() {
-  const router = useRouter();
-  const [isUploading, setIsUploading] = useState(false);
-
-  const features = [
-    {
-      icon: <FileText className="w-10 h-10 text-primary" />,
-      title: "Document Management",
-      description:
-        "Upload, organize, and access your technical documents in one secure location.",
-    },
-    {
-      icon: <Search className="w-10 h-10 text-primary" />,
-      title: "Intelligent Search",
-      description:
-        "Find exactly what you need with our advanced semantic search capabilities.",
-    },
-    {
-      icon: <MessageSquare className="w-10 h-10 text-primary" />,
-      title: "AI-Powered Chat",
-      description:
-        "Ask questions and get answers directly from your technical documentation.",
-    },
-  ];
+  const [isUploading, _] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col">

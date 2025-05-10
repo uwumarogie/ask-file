@@ -1,6 +1,5 @@
 import { generateEmbedding } from "@/util/openai-service/embedding-service";
 import { upsertEmbedding } from "@/db/vector/pinecone-service";
-// Import text-chunking util dynamically to avoid pulling browser-specific code into server bundles
 
 export async function uploadFileEmbeddingToPinecone(
   file: File,

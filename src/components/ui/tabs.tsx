@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/util/tailwind";
@@ -37,7 +37,7 @@ export const Tabs = ({
   const [hovering, setHovering] = useState(false);
 
   return (
-    <>
+    <React.Fragment>
       <div
         className={cn(
           "flex flex-row items-center justify-start mt-0 [perspective:1000px] relative overflow-auto sm:overflow-visible no-visible-scrollbar border-x w-full border-t max-w-max bg-opacity-0",
@@ -98,7 +98,7 @@ export const Tabs = ({
         hovering={hovering}
         className={cn("", contentClassName)}
       />
-    </>
+    </React.Fragment>
   );
 };
 

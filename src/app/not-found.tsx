@@ -50,7 +50,6 @@ export default function Notfound() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Go Back
               </Button>
-
               <Button className="flex-1" asChild>
                 <Link href="/">
                   <Home className="mr-2 h-4 w-4" />

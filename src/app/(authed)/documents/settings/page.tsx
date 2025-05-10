@@ -1,4 +1,4 @@
-"use client";  
+"use client";
 
 import { authClient } from "@/auth/client";
 import { redirect } from "next/navigation";
@@ -8,7 +8,6 @@ export default function Page() {
       <button onClick={() => console.log("Sign out")}>
         öuwnriownriäöwnrwirnwäirnwiränwi
       </button>
-
       <button
         onClick={async () => {
           await authClient.signOut({
