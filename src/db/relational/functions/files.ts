@@ -2,13 +2,16 @@
 import db from "@/db/relational/connection";
 import { eq, and, desc } from "drizzle-orm";
 import { filesTable } from "@/db/relational/schema/business";
-import { getFiletype } from "@/util/file-modification/util";
-import { sanitizeFileName } from "@/util/file-modification/util";
+import { getFiletype } from "@/util/file-helper/util";
+import { sanitizeFileName } from "@/util/file-helper/util";
 import { generateUUID } from "@/util/uuid";
 import { getUser } from "./user";
 import { uploadFileToS3 } from "@/util/aws/service-interaction";
 import { NextResponse } from "next/server";
 import { postConversationStart } from "./chat";
+import { getInitialTextFromFile } from "@/db/vector/util/chunk-text";
+import { getSummaryFromText } from "@/util/openai-service/format-service";
+import { generateImage } from "@/util/openai-service/image-generation";
 
 export type DocumentCardType = {
   id: string;
@@ -202,7 +205,7 @@ export async function uploadFile(
     }
 
     return conversationResponse.conversationId;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error uploading file:", error);
     throw new Error("Upload Error");
   }

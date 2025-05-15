@@ -1,6 +1,12 @@
 import React from "react";
 import { cn } from "@/util/tailwind";
-import { FileText, Clock, MoreVertical, Star } from "lucide-react";
+import {
+  FileText,
+  Clock,
+  MoreVertical,
+  Star,
+  ExternalLink,
+} from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
@@ -43,14 +49,14 @@ export function DocumentCard({
   thumbnailUrl,
   className,
 }: DocumentCardProps) {
+  const [hasClicked, setHasClicked] = React.useState(false);
   return (
-    <Link
+    <div
       className={cn(
         "group relative flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:shadow-card transition-all duration-300",
         "hover:border-primary/20 hover:-translate-y-1",
         className,
       )}
-      href={`/documents/chat/${id}`}
     >
       <div className="absolute top-2 right-2 z-10 flex space-x-1">
         {isFavorite && (
@@ -58,9 +64,15 @@ export function DocumentCard({
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           </span>
         )}
-        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          className="w-7 h-7 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={() => {
+            setHasClicked((prev) => !prev);
+          }}
+        >
           <MoreVertical className="w-4 h-4 text-muted-foreground" />
         </button>
+        {hasClicked && <button>Hello World {id}</button>}
       </div>
 
       <div className="w-full aspect-[3/2] bg-secondary flex items-center justify-center overflow-hidden">
@@ -80,12 +92,17 @@ export function DocumentCard({
       </div>
       <div className="flex flex-col p-4 flex-grow">
         <h3 className="font-medium text-sm line-clamp-2 mb-2">{title}</h3>
-
-        <div className="mt-auto flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock className="w-3 h-3" />
-          <span>{format(createdAt, "MMM d, yyyy")}</span>
+        <div className="mt-auto flex flex-row items-center gap-2 text-xs text-muted-foreground">
+          <Clock className="w-3 h-3 text-black" />
+          <span className="text-black">{format(createdAt, "MMM d, yyyy")}</span>
+          <Link
+            className="flex flex-row items-center space-x-3"
+            href={`documents/chat/${id}`}
+          >
+            <ExternalLink className="text-black scale-75" />
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
