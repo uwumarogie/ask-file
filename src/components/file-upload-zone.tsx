@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { uploadFile } from "@/db/relational/functions/files";
 import { LoadingIcon } from "./ui/spinner";
+import { usePathname } from "next/navigation";
+import { useSession } from "@/auth/client";
 
 type FileUploadZoneProps = {
   accept?: string;
@@ -31,7 +33,16 @@ export function FileUploadZone({
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const pathName = usePathname();
+  const session = useSession();
 
+  React.useEffect(() => {
+    if (pathName === "/" && session.data?.user) {
+      router.push("/documents/upload");
+    } else if (pathName === "/") {
+      router.push("/");
+    }
+  }, [file]);
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
