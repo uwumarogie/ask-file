@@ -72,7 +72,6 @@ export async function chunkText(
     return latex.map((item) => item.text);
   } else if (category === "News Article") {
     const text = await getInitialTextFromFile(file, true);
-
     return new LangChain.RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 200,

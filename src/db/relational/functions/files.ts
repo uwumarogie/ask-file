@@ -20,7 +20,7 @@ export type DocumentCardType = {
 
 type GetFilesResult = {
   success: boolean;
-  response: Array<DocumentCardType>;
+  documents: Array<DocumentCardType>;
 };
 
 export type Category = "Technical Document" | "News Article";
@@ -72,7 +72,7 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
     const anyFilesAvailable = userFiles.length === 0;
 
     if (anyFilesAvailable) {
-      return { success: false, response: [] };
+      return { success: false, documents: [] };
     }
     const response = userFiles.map((file) => {
       return {
@@ -86,13 +86,13 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
 
     return {
       success: true,
-      response: response,
+      documents: response,
     };
   } catch (error) {
     console.error("Error fetching files, error", error);
     return {
       success: false,
-      response: [],
+      documents: [],
     };
   }
 }

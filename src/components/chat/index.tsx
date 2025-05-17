@@ -1,4 +1,7 @@
 "use client";
+// TODO: Refactor the entire file
+//
+//
 import React, { useState, useRef, useEffect } from "react";
 import { Send, FileUp, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,7 +40,6 @@ export function Chat({ chatId }: { chatId: string }) {
       timestamp: new Date(),
     };
     const pineconeResult = await queryPinecone(input, chatId);
-
     const aiResponse = await fetch("/api/get-user-answer", {
       method: "POST",
       headers: {
