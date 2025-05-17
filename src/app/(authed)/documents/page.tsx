@@ -14,6 +14,5 @@ export type DocumentCardProps = {
 
 export default async function DocumentPage() {
   const documents = await dbGetFiles();
-
   return <Documents documents={documents.response} />;
 }

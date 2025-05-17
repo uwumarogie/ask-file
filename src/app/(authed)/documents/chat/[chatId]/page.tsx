@@ -1,4 +1,6 @@
 import { Chat } from "@/components/chat";
+import { checkMappingFileIdWithUser } from "@/db/relational/functions/files";
+import { redirect } from "next/navigation";
 
 type ChatPageProps = {
   params: Promise<{
@@ -6,8 +8,9 @@ type ChatPageProps = {
   }>;
 };
 
-// NOTE: Validate the chatId is for the right user
 export default async function ChatPage({ params }: ChatPageProps) {
   const { chatId } = await params;
-  return <Chat chatId={chatId} />;
+  const isValidFileId = await checkMappingFileIdWithUser(chatId);
+
+  return isValidFileId ? <Chat chatId={chatId} /> : redirect("/404");
 }

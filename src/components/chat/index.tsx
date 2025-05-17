@@ -4,6 +4,7 @@ import { Send, FileUp, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/util/tailwind";
 import { SearchBar } from "@/components/document/search-bar";
+import { queryPinecone } from "@/db/vector/pinecone-service";
 
 const initialMessages = [
   {
@@ -15,7 +16,6 @@ const initialMessages = [
 ];
 
 export function Chat({ chatId }: { chatId: string }) {
-  console.log(chatId);
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -25,7 +25,7 @@ export function Chat({ chatId }: { chatId: string }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = (e?: React.FormEvent) => {
+  const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
 
     if (!input.trim()) return;
@@ -36,14 +36,26 @@ export function Chat({ chatId }: { chatId: string }) {
       sender: "user",
       timestamp: new Date(),
     };
+    const pineconeResult = await queryPinecone(input, chatId);
 
+    const aiResponse = await fetch("/api/get-user-answer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        input,
+        pineconeResult,
+      }),
+    });
+    const _context = await aiResponse.json();
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsTyping(true);
     setTimeout(() => {
       const aiResponse = {
         id: (Date.now() + 1).toString(),
-        content: getAIResponse(input),
+        content: _context.responseText,
         sender: "ai",
         timestamp: new Date(),
       };
@@ -51,24 +63,6 @@ export function Chat({ chatId }: { chatId: string }) {
       setMessages((prev) => [...prev, aiResponse]);
       setIsTyping(false);
     }, 1500);
-  };
-
-  const getAIResponse = (userInput: string) => {
-    const input = userInput.toLowerCase();
-
-    if (input.includes("hello") || input.includes("hi")) {
-      return "Hello! How can I help you with your technical documents today?";
-    }
-
-    if (input.includes("documentation") || input.includes("api")) {
-      return "I can help you search through your API documentation. What specific information are you looking for?";
-    }
-
-    if (input.includes("search") || input.includes("find")) {
-      return "I can search through all your uploaded documents. Please specify what you're looking for, or ask me a question about your technical content.";
-    }
-
-    return "I'm analyzing your documents to find the most relevant information. Could you provide more details about what you're looking for?";
   };
 
   return (
@@ -166,7 +160,6 @@ export function Chat({ chatId }: { chatId: string }) {
               <SearchBar placeholder="Filter documents..." className="w-full" />
             </div>
           </div>
-
           <div className="flex-1 overflow-y-auto p-4">
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (

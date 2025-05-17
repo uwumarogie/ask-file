@@ -8,7 +8,6 @@ export async function uploadFileEmbeddingToPinecone(
   fileKey: string,
 ) {
   try {
-    // Dynamically import chunking util so static imports (e.g. PDF.js) are not evaluated on initial load
     const { getChunkedTextFromFile } = await import(
       "@/db/vector/util/chunk-text"
     );
