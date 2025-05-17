@@ -1,13 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { cn } from "@/util/tailwind";
-import {
-  FileText,
-  Settings,
-  ChevronDown,
-  FolderOpen,
-  Menu,
-} from "lucide-react";
+import { FileText, Settings, ChevronDown, Menu } from "lucide-react";
 import Link from "next/link";
 import { NavItem } from "./nav-item";
 
@@ -35,7 +29,7 @@ export function DocumentNavbar() {
     <>
       <header className="flex items-center justify-between p-4 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
         <Link href="/" className="flex items-center gap-2">
-          <FolderOpen className="w-6 h-6 text-primary" />
+          <FileText className="w-6 h-6 text-primary" />
           <span className="font-semibold text-lg">AskFile</span>
         </Link>
         <button
@@ -59,8 +53,8 @@ export function DocumentNavbar() {
         )}
       >
         <div className="flex flex-row items-center w-full p-3 h-16 border-b border-sidebar-border">
-          <Link href="/" className="flex flex-row items-center gap-2 ">
-            <FolderOpen className="w-6 h-6 text-primary" />
+          <Link href="/documents" className="flex flex-row items-center gap-2 ">
+            <FileText className="w-6 h-6 text-primary" />
             <span className="font-semibold text-lg">AskFile</span>
           </Link>
           <button

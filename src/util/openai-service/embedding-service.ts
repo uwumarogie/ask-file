@@ -35,7 +35,6 @@ export async function generateEmbedding(
 ): Promise<number[][]> {
   const batchSize = 1000;
   const embeddings: number[][] = [];
-
   for (let i = 0; i < chunkedText.length; i += batchSize) {
     const batch = chunkedText.slice(i, i + batchSize);
     try {
@@ -49,7 +48,6 @@ export async function generateEmbedding(
       console.error("Error generating embeddings:", error);
     }
   }
-
   return embeddings;
 }
 

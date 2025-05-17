@@ -9,9 +9,6 @@ import { getUser } from "./user";
 import { uploadFileToS3 } from "@/util/aws/service-interaction";
 import { NextResponse } from "next/server";
 import { postConversationStart } from "./chat";
-import { getInitialTextFromFile } from "@/db/vector/util/chunk-text";
-import { getSummaryFromText } from "@/util/openai-service/format-service";
-import { generateImage } from "@/util/openai-service/image-generation";
 
 export type DocumentCardType = {
   id: string;
@@ -23,7 +20,7 @@ export type DocumentCardType = {
 
 type GetFilesResult = {
   success: boolean;
-  response: Array<DocumentCardType>;
+  documents: Array<DocumentCardType>;
 };
 
 export type Category = "Technical Document" | "News Article";
@@ -75,7 +72,7 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
     const anyFilesAvailable = userFiles.length === 0;
 
     if (anyFilesAvailable) {
-      return { success: false, response: [] };
+      return { success: false, documents: [] };
     }
     const response = userFiles.map((file) => {
       return {
@@ -89,23 +86,20 @@ export async function dbGetFiles(): Promise<GetFilesResult> {
 
     return {
       success: true,
-      response: response,
+      documents: response,
     };
   } catch (error) {
     console.error("Error fetching files, error", error);
     return {
       success: false,
-      response: [],
+      documents: [],
     };
   }
 }
 
-export async function dbCreateFile(
-  file: File,
-  userId: string,
-  fileKey: string | undefined,
-) {
+export async function dbCreateFile(file: File, fileKey: string | undefined) {
   try {
+    const user = await getUser();
     const awsFileKey = fileKey;
     const sanitizedFileName = sanitizeFileName(file.name);
     const fileId = generateUUID();
@@ -113,14 +107,13 @@ export async function dbCreateFile(
     //TODO: Add thumbnail path
     await db.insert(filesTable).values({
       fileId: fileId,
-      userId: userId,
+      userId: user.id,
       fileName: sanitizedFileName,
       filePath: awsFileKey!,
     });
 
     return {
       success: true,
-      userId,
       fileId,
       fileName: sanitizedFileName,
       awsFileKey: awsFileKey!,
@@ -139,25 +132,24 @@ export async function uploadFileAcrossServices(file: File) {
       throw new Error("User not authenticated");
     }
     // UPLOAD FILE TO S3
-    const response = await uploadFileToS3(user.id, file);
+    const response = await uploadFileToS3(file);
     if (!response.success) {
       throw new Error(response.message);
     }
 
     // UPLOAD FILE TO POSTGRES
-    const uploadResult = await dbCreateFile(file, user.id, response.fileKey);
+    const uploadResult = await dbCreateFile(file, response.fileKey);
     if (!uploadResult.success) {
       throw new Error("Failed to upload file to the database");
     }
-
-    // UPLOAD FILE TO PINECONE (dynamic import to avoid bundling browser-specific code)
+    // UPLOAD FILE TO PINECONE
     {
       const { uploadFileEmbeddingToPinecone } = await import(
         "@/db/vector/functions/file"
       );
       await uploadFileEmbeddingToPinecone(
         file,
-        uploadResult.userId!,
+        user.id,
         uploadResult.fileId!,
         uploadResult.awsFileKey!,
       );
@@ -239,6 +231,33 @@ export async function dbDeleteFile(sanitizedFileName: string) {
     return { success: true, fileId: existingFiles[0].fileId };
   } catch (error) {
     console.error(error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+export async function checkMappingFileIdWithUser(fileId: string) {
+  const uuidRegex =
+    /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+  try {
+    const user = await getUser();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    if (!uuidRegex.test(fileId)) {
+      return false;
+    }
+
+    const existingFiles = await db
+      .select()
+      .from(filesTable)
+      .where(
+        and(eq(filesTable.fileId, fileId), eq(filesTable.userId, user.id)),
+      );
+
+    return existingFiles.length === 1;
+  } catch (error) {
+    console.error("Error checking mapping fileId with user", error);
     return { success: false, error: (error as Error).message };
   }
 }
