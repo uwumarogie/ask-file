@@ -86,10 +86,11 @@ export function SignIn() {
               variant="outline"
               className={cn("w-full gap-2")}
               onClick={async () => {
-                await signIn.social({
+                const test = await signIn.social({
                   provider: "google",
                   callbackURL: "/documents",
                 });
+                console.log(test);
               }}
             >
               <Image

@@ -1,7 +1,6 @@
 "use client";
 // TODO: Refactor the entire file
-//
-//
+
 import React, { useState, useRef, useEffect } from "react";
 import { Send, FileUp, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";

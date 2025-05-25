@@ -10,7 +10,6 @@ type ChatPageProps = {
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const { chatId } = await params;
-  const isValidFileId = await checkMappingFileIdWithUser(chatId);
-
-  return isValidFileId ? <Chat chatId={chatId} /> : redirect("/404");
+  const isValid = await checkMappingFileIdWithUser(chatId);
+  return isValid ? <Chat chatId={chatId} /> : redirect("/404");
 }
