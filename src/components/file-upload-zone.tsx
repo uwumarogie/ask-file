@@ -27,7 +27,7 @@ const getFileIcon = (fileName: string) => {
 
 export function FileUploadZone({
   accept = ".pdf",
-  maxSize = 10, // Default 10MB
+  maxSize = 10,
 }: FileUploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -40,9 +40,10 @@ export function FileUploadZone({
     if (pathName === "/" && session.data?.user) {
       router.push("/documents/upload");
     } else if (pathName === "/") {
-      router.push("/");
+      router.push("/sign-in");
     }
   }, [file]);
+
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
