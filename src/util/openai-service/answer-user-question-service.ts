@@ -50,9 +50,7 @@ ${input.trim()}
 === INSTRUCTIONS ===
 1. Answer in a clear, concise academic style.
 2. Support every factual statement with an inline citation to its source, e.g. “[file_id: XYZ]”.
-3. If the question cannot be answered from the provided contexts, reply:
-   “I’m sorry, I don’t have the information needed to answer that question.”
-4. Do not introduce information not contained in the contexts.
+3. Do not introduce information not contained in the contexts.
 5. Keep the answer self-contained; do not restate the full context.
 
 === ANSWER ===

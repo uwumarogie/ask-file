@@ -17,7 +17,7 @@ const requestSchema = z.object({
       }),
     ),
     usage: z.object({
-      readUnits: z.number(),
+      readUnits: z.number().default(0),
     }),
   }),
 });
